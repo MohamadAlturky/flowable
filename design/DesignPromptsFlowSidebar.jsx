@@ -1,3 +1,9 @@
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 import Link from 'next/link'
 import { Button } from "@/components/ui/button";
 import {
@@ -17,7 +23,7 @@ const onDragStart = (event, nodeType) => {
   event.dataTransfer.effectAllowed = "move";
 };
 
-export default function MainSidebar() {
+export default function DesignPromptsFlowSidebar() {
   return (
     <Tabs defaultValue="components" className="rounded-none">
       <TabsList className="d-flex justify-center w-full rounded-none">
@@ -27,14 +33,14 @@ export default function MainSidebar() {
       <TabsContent
         value="components"
       >
-        <Card className="border-0 rounded-none">
+        {/* <Card className="border-0 rounded-none"> */}
           <CardHeader>
             <CardTitle>Dragables</CardTitle>
             <CardDescription>
               drag and drop to start modeling.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-2">
+          {/* <CardContent className="space-y-2">
             <Card
               draggable
               style={{
@@ -44,12 +50,56 @@ export default function MainSidebar() {
                 justifyContent: "center",
                 borderRadius: "0px",
               }}
-              onDragStart={(event) => onDragStart(event, "pool")}
+              onDragStart={(event) => onDragStart(event, "tools")}
             >
-              <span>pool</span>
+              tools
             </Card>
-          </CardContent>
-        </Card>
+          </CardContent> */}
+        {/* </Card> */}
+
+        <div className="w-10 p-4">
+
+          <Accordion type="single" collapsible>
+            <AccordionItem value="item-1">
+              <AccordionTrigger>templates</AccordionTrigger>
+              <AccordionContent>
+              <Card
+              draggable
+              style={{
+                cursor: "grab",
+                display: "flex",
+                justifyContent: "center",
+                borderRadius: "0px",
+              }}
+              onDragStart={(event) => onDragStart(event, "tools")}
+            >
+              tools
+            </Card>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+          <Accordion type="single" collapsible>
+            <AccordionItem value="item-1">
+              <AccordionTrigger>load</AccordionTrigger>
+              <AccordionContent>
+              <Card
+              draggable
+              style={{
+                cursor: "grab",
+                display: "flex",
+                justifyContent: "center",
+                borderRadius: "0px",
+              }}
+              onDragStart={(event) => onDragStart(event, "tools")}
+
+            >
+              old template
+            </Card>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+
       </TabsContent>
       <TabsContent value="settings">
         <Card className="border-0 rounded-none">
@@ -70,7 +120,7 @@ export default function MainSidebar() {
                 justifyContent: "center",
                 borderRadius: "0px",
               }}
-              onDragStart={(event) => onDragStart(event, "pool")}
+              onDragStart={(event) => onDragStart(event, "tools")}
             >
               AI Assistant
             </Card>
