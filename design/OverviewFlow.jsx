@@ -1,23 +1,33 @@
 "use client";
 import {
+  ContextMenu,
+  ContextMenuCheckboxItem,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuRadioGroup,
+  ContextMenuRadioItem,
+  ContextMenuSeparator,
+  ContextMenuShortcut,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
+import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
-} from "@/components/ui/resizable"
+} from "@/components/ui/resizable";
 
-import { useToast } from "@/components/ui/use-toast"
-// import { ToastContainer, toast } from "react-toastify";
-// import "react-toastify/dist/ReactToastify.css";
+import { useToast } from "@/components/ui/use-toast";
 import { FitViewIcon } from "./Icons/FitView";
 import { ControlButton } from "@xyflow/react";
-// import InputModal from "../components/modal/Modal.jsx";
 import apiUrl from "../configurations/apiConfiguration.json";
 import axios from "axios";
-// import BuildNode from "../services/DragAndDrop/DragAndDropService";
 import React, { useCallback, useEffect } from "react";
 import { useState, DragEvent } from "react";
-import BuildPoolNode from "../services/DragAndDrop/PoolBuilder"
-// import HandleDoubleClick from "../services/DoubleClick/DoubleClickHandler";
+import BuildPoolNode from "../services/DragAndDrop/PoolBuilder";
 import {
   ReactFlow,
   addEdge,
@@ -27,7 +37,7 @@ import {
   useNodesState,
   BackgroundVariant,
   useEdgesState,
-  ReactFlowProvider
+  ReactFlowProvider,
 } from "@xyflow/react";
 
 import {
@@ -43,7 +53,7 @@ import TextNode from "./TextNode";
 import ButtonEdge from "./ButtonEdge";
 import Activity from "./Activity";
 import Gateway from "./Gateway";
-import InsertValueModal from "../components/modals/InsertValueModal"
+import InsertValueModal from "../components/modals/InsertValueModal";
 import "@xyflow/react/dist/style.css";
 import "../css/overview.css";
 
@@ -72,8 +82,8 @@ const getId = () => `${id++}`;
 const nodeClassName = (node) => node.type;
 import MainSidebar from "./MainSidebar";
 const OverviewFlow = () => {
-  const { toast } = useToast()
-  const [poolModalOpen,setPoolModalOpen] = useState(false)
+  const { toast } = useToast();
+  const [poolModalOpen, setPoolModalOpen] = useState(false);
   const [reactFlowInstance, setReactFlowInstance] = useState();
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
@@ -107,96 +117,129 @@ const OverviewFlow = () => {
       if (_type == "pool") {
         setPoolModalOpen(true);
       }
-      
     }
   };
-  
+
   /////
   const onNodeDoubleClick = async (_, node) => {
-    let _newNodes = await HandleDoubleClick(node, nodes);
-    console.log("_newNodes");
-    console.log(_newNodes);
-    setNodes(_newNodes);
+    // let _newNodes = await HandleDoubleClick(node, nodes);
+    // console.log("_newNodes");
+    // console.log(_newNodes);
+    // setNodes(_newNodes);
+    console.log(node);
   };
   return (
-    <>    
-    <ReactFlowProvider>
-        <div style={{
-          width:"100vw",
-          height:"100vh"
-        }}>
-
-        <ResizablePanelGroup
-          direction="horizontal"
-          className="h-screen"
+    <>
+      <ReactFlowProvider>
+        <div
+          style={{
+            width: "100vw",
+            height: "100vh",
+          }}
         >
-          <ResizablePanel defaultSize={80}>
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={(e)=>{
-              onNodesChange(e)
-            }}
-            onEdgesChange={onEdgesChange}
-            onNodeDoubleClick={onNodeDoubleClick}
-            onConnect={onConnect}
-            fitView
-            attributionPosition="top-right"
-            nodeTypes={nodeTypes}
-            edgeTypes={edgeTypes}
-            onDrop={onDrop}
-            onDragOver={onDragOver}
-            onInit={onInit}
-            className="overview"
-            maxZoom={Infinity}
-            zoomOnDoubleClick={false}
-          >
-            <MiniMap zoomable pannable nodeClassName={nodeClassName} />
-            {/* <Controls /> */}
-            <Controls showFitView={false} showInteractive={false}>
-              <ControlButton
-                title="fit content"
-                onClick={() =>
-                  reactFlowInstance.fitView({ duration: 1200, padding: 0.3 })
-                }
-              >
-                <FitViewIcon />
-              </ControlButton>
-            </Controls>
-            <Background variant={BackgroundVariant.Dots} />
-          </ReactFlow>
-          </ResizablePanel>
-          
-          <ResizableHandle withHandle />
+          <ResizablePanelGroup direction="horizontal" className="h-screen">
+            <ResizablePanel defaultSize={80}>
+              <ContextMenu>
+                <ContextMenuTrigger>
+                  <ReactFlow
+                    nodes={nodes}
+                    edges={edges}
+                    onNodesChange={(e) => {
+                      onNodesChange(e);
+                    }}
+                    onEdgesChange={onEdgesChange}
+                    onNodeDoubleClick={onNodeDoubleClick}
+                    onConnect={onConnect}
+                    fitView
+                    attributionPosition="top-right"
+                    nodeTypes={nodeTypes}
+                    edgeTypes={edgeTypes}
+                    onDrop={onDrop}
+                    onDragOver={onDragOver}
+                    onInit={onInit}
+                    className="overview"
+                    maxZoom={Infinity}
+                    zoomOnDoubleClick={false}
+                  >
+                    <MiniMap zoomable pannable nodeClassName={nodeClassName} />
+                    {/* <Controls /> */}
+                    <Controls showFitView={false} showInteractive={false}>
+                      <ControlButton
+                        title="fit content"
+                        onClick={() =>
+                          reactFlowInstance.fitView({
+                            duration: 1200,
+                            padding: 0.3,
+                          })
+                        }
+                      >
+                        <FitViewIcon />
+                      </ControlButton>
+                    </Controls>
+                    <Background variant={BackgroundVariant.Dots} />
+                  </ReactFlow>
+                </ContextMenuTrigger>
+                <ContextMenuContent className="w-64">
+                  <ContextMenuItem
+                    inset
+                    onClick={(e) => {
+                      setModalOpen(true);
+                    }}
+                  >
+                    Adjust
+                    <ContextMenuShortcut>⌘</ContextMenuShortcut>
+                  </ContextMenuItem>
+                  <ContextMenuItem
+                    inset
+                  >
+                    Ask AI
+                    <ContextMenuShortcut>⌘</ContextMenuShortcut>
+                  </ContextMenuItem>
 
-          <ResizablePanel defaultSize={20}>
-            <MainSidebar />
-            <InsertValueModal 
-              placeholder = {"write here.."}
-              isOpen={poolModalOpen}
-              setIsOpen={setPoolModalOpen}
-              supTitle={"set the participant name."}
-              title={"Write Pool Name"}
-              setValueName={async (v)=>{
-                let node = BuildPoolNode(position, type, nodes, v,setNodes,getId)
-                if(node != null)
-                {
-                  setNodes((nds) => nds.concat(node));
-                  toast({
-                    title: "✅ Greate!",
-                    description: `the pool added successfully.`,
-                  })
-                }
-                else{
-                  toast({
-                    title: "❌ Uh oh!",
-                    description: `something went wrong sorry.`,
-                  })
-                }
-              }}/>
-          </ResizablePanel>
-        </ResizablePanelGroup>
+                  <ContextMenuSeparator />
 
+                  <ContextMenuCheckboxItem>
+                    Print
+                  </ContextMenuCheckboxItem>
+                </ContextMenuContent>
+              </ContextMenu>
+            </ResizablePanel>
+
+            <ResizableHandle withHandle />
+
+            <ResizablePanel defaultSize={20}>
+              <MainSidebar />
+              <InsertValueModal
+                placeholder={"write here.."}
+                isOpen={poolModalOpen}
+                setIsOpen={setPoolModalOpen}
+                supTitle={"set the participant name."}
+                title={"Write Pool Name"}
+                setValueName={async (v) => {
+                  let node = BuildPoolNode(
+                    position,
+                    type,
+                    nodes,
+                    v,
+                    setNodes,
+                    getId
+                  );
+                  if (node != null) {
+                    setNodes((nds) => nds.concat(node));
+                    toast({
+                      title: "✅ Greate!",
+                      description: `the pool added successfully.`,
+                    });
+                  } else {
+                    toast({
+                      title: "❌ Uh oh!",
+                      description: `something went wrong sorry.`,
+                    });
+                  }
+                }}
+              />
+            </ResizablePanel>
+          </ResizablePanelGroup>
         </div>
       </ReactFlowProvider>
     </>

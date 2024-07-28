@@ -246,7 +246,7 @@
 }
 
 
-body>div>div>div>div>div.react-flow__panel.react-flow__attribution.top.right>a {
+body > div:nth-child(1) > div > div:nth-child(1) > span > div > div.react-flow__panel.react-flow__attribution.top.right > a {
     display: none !important;
 }
 

@@ -113,6 +113,10 @@ function PoolNode({ id, data, selected}) {
         callBack={() => {
           const newNodes = reactFlow.getNodes().filter(n => n.id != id)
           data.setNodes(newNodes)
+          toast({
+            title: "✅ Greate!",
+            description: `pool deleted successfully.`,
+          })
         }} />
 
         <InsertValueModal 
