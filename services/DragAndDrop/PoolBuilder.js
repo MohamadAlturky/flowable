@@ -1,10 +1,10 @@
 
-export default function BuildPoolNode(position, type, nodes, name, setNodes) {
+export default function BuildPoolNode(position, type, nodes, name, setNodes,getId) {
     return {
-        id: name,
+        id: getId(),
         type,
         position,
-        data: { label: `${name}`, nodes: nodes, setNodes: setNodes },
+        data: { label: `${name}`, setNodes: setNodes, getId:getId,displayOrder:1 },
         resizable: true,
         style: {
             width: 500,

@@ -67,7 +67,7 @@ const onDragOver = (event) => {
 };
 
 let id = 0;
-const getId = () => `dndnode_${id++}`;
+const getId = () => `${id++}`;
 
 const nodeClassName = (node) => node.type;
 import MainSidebar from "./MainSidebar";
@@ -107,69 +107,10 @@ const OverviewFlow = () => {
       if (_type == "pool") {
         setPoolModalOpen(true);
       }
-      // let node = await BuildPoolNode(position, type, nodes, nodes);
-      // console.log(node);
-      // if (node != null) {
-      //   setNodes((nds) => nds.concat(node));
-
-      //   const Toast = Swal.mixin({
-      //     toast: true,
-      //     position: "top-end",
-      //     showConfirmButton: false,
-      //     timer: 1000,
-      //     timerProgressBar: true,
-      //     didOpen: (toast) => {
-      //       toast.addEventListener("mouseenter", Swal.stopTimer);
-      //       toast.addEventListener("mouseleave", Swal.resumeTimer);
-      //     },
-      //   });
-
-      //   Toast.fire({
-      //     icon: "success",
-      //     title: "OK",
-      //   });
-      // } else {
-      //   const Toast = Swal.mixin({
-      //     toast: true,
-      //     position: "top-end",
-      //     showConfirmButton: false,
-      //     timer: 1000,
-      //     timerProgressBar: true,
-      //     didOpen: (toast) => {
-      //       toast.addEventListener("mouseenter", Swal.stopTimer);
-      //       toast.addEventListener("mouseleave", Swal.resumeTimer);
-      //     },
-      //   });
-
-      //   Toast.fire({
-      //     icon: "error",
-      //     title: "No Action Applied",
-      //   });
-      // }
+      
     }
   };
-  const GetPoolName = (value) => {
-    if (value == "") {
-      toast.error("Please Enter The Pool Name", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-    } else {
-      console.log("type", type);
-      console.log("position", position);
-      let node = BuildNode(position, type, nodes, value,setNodes);
-      console.log(node);
-      if (node != null) {
-        setNodes((nds) => nds.concat(node));
-      }
-    }
-  };
+  
   /////
   const onNodeDoubleClick = async (_, node) => {
     let _newNodes = await HandleDoubleClick(node, nodes);
@@ -237,7 +178,7 @@ const OverviewFlow = () => {
               supTitle={"set the participant name."}
               title={"Write Pool Name"}
               setValueName={async (v)=>{
-                let node = BuildPoolNode(position, type, nodes, v,setNodes)
+                let node = BuildPoolNode(position, type, nodes, v,setNodes,getId)
                 if(node != null)
                 {
                   setNodes((nds) => nds.concat(node));

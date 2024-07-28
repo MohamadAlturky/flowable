@@ -1,8 +1,8 @@
-export default function BuildLaneNode(nodes, name,parent) {
+export default function BuildLaneNode(nodes, name,parent,getId) {
     return {
-        id: name,
+        id: getId(),
         type:"swimlane",
-        data: { label: `${name}` },
+        data: { label: `${name}`,displayOrder:2 },
         resizable: true,
         style: {
             width: 200,

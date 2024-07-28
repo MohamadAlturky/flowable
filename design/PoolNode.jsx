@@ -1,9 +1,10 @@
 import { memo } from "react";
-import { NodeResizer } from "@xyflow/react";
+import {useReactFlow, NodeResizer } from "@xyflow/react";
 import React from "react";
 import AreYouSureToDelete from "../components/modals/AreYouSureToDelete"
 import InsertValueModal from "../components/modals/InsertValueModal"
-import BuildLaneNode from "@/services/builders/LaneBuilder"; '../services/builders/LaneBuilder'
+import BuildLaneNode from "@/services/builders/LaneBuilder";
+
 import {
   ContextMenu,
   ContextMenuCheckboxItem,
@@ -25,8 +26,9 @@ import { useToast } from "@/components/ui/use-toast"
 function PoolNode({ id, data, selected}) {
   const [modalOpen, setModalOpen] = React.useState(false)
   const [laneModalOpen,setLaneModalOpen] = React.useState(false)
+  const [editModalOpen,setEditModalOpen] = React.useState(false)
   const { toast } = useToast()
-
+  const reactFlow = useReactFlow()
   return (
     <>
       <ContextMenu>
@@ -89,7 +91,9 @@ function PoolNode({ id, data, selected}) {
           Show Bookmarks Bar
           <ContextMenuShortcut>⌘⇧B</ContextMenuShortcut>
         </ContextMenuCheckboxItem> */}
-          <ContextMenuCheckboxItem>Edit</ContextMenuCheckboxItem>
+          <ContextMenuCheckboxItem
+           onClick={(e) => { setEditModalOpen(true) }}>
+          Edit</ContextMenuCheckboxItem>
           {/* <ContextMenuSeparator /> */}
           {/* <ContextMenuRadioGroup value="pedro"> */}
           {/* <ContextMenuLabel inset>People</ContextMenuLabel> */}
@@ -107,7 +111,7 @@ function PoolNode({ id, data, selected}) {
         supTitle={"this pool will be deleted with it's lanes and activities!!!"}
         title={"Are you sure?"}
         callBack={() => {
-          const newNodes = data.nodes.filter(n => n.id != id)
+          const newNodes = reactFlow.getNodes().filter(n => n.id != id)
           data.setNodes(newNodes)
         }} />
 
@@ -118,11 +122,11 @@ function PoolNode({ id, data, selected}) {
               supTitle={"set the sub participant name."}
               title={"Write Lane Name"}
               setValueName={(v)=>{
-                let node = BuildLaneNode(data.nodes, v, id)
+                let node = BuildLaneNode(reactFlow.getNodes(), v, id,data.getId)
                 if(node != null)
                 {
                   data.setNodes((nds) => nds.concat(node));
-                  // console.log(data.nodes);
+                  // console.log(reactFlow.getNodes());
                   toast({
                     title: "✅ Greate!",
                     description: `the lane added successfully.`,
@@ -135,6 +139,38 @@ function PoolNode({ id, data, selected}) {
                   })
                 }
               }}/>
+
+
+          <InsertValueModal 
+              placeholder = {"write here.."}
+              isOpen={editModalOpen}
+              setIsOpen={setEditModalOpen}
+              supTitle={"set the new name of the pool."}
+              title={"Write A New Pool Name"}
+              setValueName={(v)=> {
+
+                console.log(reactFlow.getNodes());
+                let node = reactFlow.getNodes().filter(n=>n.id == id)
+                console.log(node);
+                node[0].data.label = v
+                let newNodes = node.concat(reactFlow.getNodes().filter(n=>n.id != id))
+                if(node != null)
+                {
+                  data.setNodes((nds) => newNodes);
+                  // console.log(reactFlow.getNodes());
+                  toast({
+                    title: "✅ Greate!",
+                    description: `the pool name edited successfully.`,
+                  })
+                }
+                else{
+                  toast({
+                    title: "❌ Uh oh!",
+                    description: `something went wrong sorry.`,
+                  })
+                }
+              }}
+              />
     </>
   );
 }
