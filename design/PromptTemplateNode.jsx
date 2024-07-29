@@ -9,7 +9,7 @@ const labelStyle = {
 };
 
 function PromptTemplateNode({ data }) {
-  const [emoji, setEmoji] = useState(() => '🚀');
+  const [emoji, setEmoji] = useState(() => '🤖');
 
   return (
     <>

@@ -56,7 +56,7 @@ import Gateway from "./Gateway";
 import InsertValueModal from "../components/modals/InsertValueModal";
 import "@xyflow/react/dist/style.css";
 import "../css/overview.css";
-
+import {loadObjectFromLocalStorage} from "../data/storage"
 const nodeTypes = {
   annotation: AnnotationNode,
   tools: PromptTemplateNode,
@@ -82,6 +82,7 @@ const getId = () => `${id++}`;
 const nodeClassName = (node) => node.type;
 import DesignPromptsFlowSidebar from "./DesignPromptsFlowSidebar";
 const DesignGenerationStrategy = () => {
+
   const { toast } = useToast();
   const [poolModalOpen, setPoolModalOpen] = useState(false);
   const [reactFlowInstance, setReactFlowInstance] = useState();
@@ -90,7 +91,9 @@ const DesignGenerationStrategy = () => {
   const onInit = (rfi) => setReactFlowInstance(rfi);
 
   const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge(params, eds)),
+    (params) => {
+      setEdges((eds) => addEdge({...params, animated: true}, eds))
+    },
     []
   );
 
@@ -107,6 +110,7 @@ const DesignGenerationStrategy = () => {
 
     if (reactFlowInstance) {
       let _type = event.dataTransfer.getData("application/reactflow");
+      let _name = event.dataTransfer.getData("application/reactflow/nodeName");
       setType(_type);
       let _position = reactFlowInstance.screenToFlowPosition({
         x: event.clientX,
@@ -118,11 +122,14 @@ const DesignGenerationStrategy = () => {
         setPoolModalOpen(true);
       }
       console.log(_type);
-      setNodes(ndx=>ndx.concat({
-        id: getId(),
-             type:_type,
+      let promptId = getId()
+      const prompt = loadObjectFromLocalStorage(_name)
+
+      const newNodes = [{
+        id: promptId,
+            type:_type,
             position:_position,
-            data: { label: `${"title"}` },
+            data: { label: `${_name}` },
             resizable: true,
             style: {
                 width: 200,
@@ -133,7 +140,36 @@ const DesignGenerationStrategy = () => {
                 color: "white",
                 backgroundColor: "rgb(123, 75, 242, 93)",
             }
-      }))
+      }]
+      const newEdges = []
+      for(let i =0;i < prompt.inputs.length;i++)
+      {
+        let nodeId = getId()
+        newNodes.push({
+          id: nodeId,
+              type:"tools",
+              position:{
+                x:_position.x - 500,
+                y:_position.y - 100*(i) + (parseInt(prompt.inputs.length/2)*100)
+              },
+              data: { label: `${prompt.inputs[i]}` },
+              resizable: true,
+              style: {
+                  width: 200,
+                  height: 50,
+                  borderRadius: '3px',
+                  border: '1px solid #1a192b',
+                  fontWeight: "900",
+                  color: "white",
+                  backgroundColor: "rgb(0, 250, 30, 93)",
+              }
+        })
+        setEdges((eds) => addEdge({source:nodeId,
+          target:promptId, animated: true}, eds))
+      }
+
+
+      setNodes(ndx=>ndx.concat(newNodes))
     }
   };
 

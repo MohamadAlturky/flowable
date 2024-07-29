@@ -10,13 +10,15 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer"
+import { Textarea } from "../ui/textarea"
 
 
-export default function InsertValueModal({ isOpen, setIsOpen, setValueName, title, supTitle, placeholder,label,defaultValue }) {
+export default function InsertValueAreaModal({ isOpen, setIsOpen, setValueName, title, supTitle, placeholder,label,defaultValue }) {
   if(defaultValue == undefined || defaultValue == null)
   {
     defaultValue = ""
   }
+  console.log("defaultValue",defaultValue);
   const [value, setValue] = React.useState(defaultValue)
   const inputRef = React.useRef(null);
   const { toast } = useToast()
@@ -38,7 +40,7 @@ export default function InsertValueModal({ isOpen, setIsOpen, setValueName, titl
       setIsOpen(false)
     }}>
       <DrawerContent>
-        <form onSubmit={(e)=>{
+        <form className="w-full" onSubmit={(e)=>{
           e.preventDefault()
           if (value == "") {
             console.log(value);
@@ -53,7 +55,7 @@ export default function InsertValueModal({ isOpen, setIsOpen, setValueName, titl
             setValueName(value)
           }
         }}>
-          <div className="mx-auto w-full max-w-sm">
+          <div className="mx-auto w-full" style={{maxWidth:"800px"}}>
             <DrawerHeader>
               <DrawerTitle>{title}</DrawerTitle>
               <DrawerDescription>{supTitle}</DrawerDescription>
@@ -62,7 +64,9 @@ export default function InsertValueModal({ isOpen, setIsOpen, setValueName, titl
 
               <div className="flex items-center justify-center space-x-2">
                 <div className="flex-1 text-center">
-                  <Input ref={inputRef} onChange={(e) => setValue(e.target.value)} value={value} placeholder={placeholder} />
+                  <Textarea className="h-80" ref={inputRef} onChange={(e) => setValue(e.target.value)} 
+                  value={value}
+                  placeholder={placeholder} />
                   <div className="text-[0.70rem] uppercase text-muted-foreground">
                   </div>
                 </div>

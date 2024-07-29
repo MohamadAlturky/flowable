@@ -14,16 +14,21 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import React from 'react'
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { loadObjectFromLocalStorage } from "../data/storage";
 
-const onDragStart = (event, nodeType) => {
+const onDragStart = (event, nodeType,nodeName) => {
   event.dataTransfer.setData("application/reactflow", nodeType);
+  event.dataTransfer.setData("application/reactflow/nodeName", nodeName);
   event.dataTransfer.effectAllowed = "move";
 };
 
 export default function DesignPromptsFlowSidebar() {
+  const [prompts, setPrompts] = React.useState(loadObjectFromLocalStorage("prompts"))
+
   return (
     <Tabs defaultValue="components" className="rounded-none">
       <TabsList className="d-flex justify-center w-full rounded-none">
@@ -33,48 +38,35 @@ export default function DesignPromptsFlowSidebar() {
       <TabsContent
         value="components"
       >
-        {/* <Card className="border-0 rounded-none"> */}
           <CardHeader>
             <CardTitle>Dragables</CardTitle>
             <CardDescription>
               drag and drop to start modeling.
             </CardDescription>
           </CardHeader>
-          {/* <CardContent className="space-y-2">
-            <Card
-              draggable
-              style={{
-                cursor: "grab",
-                // width: "200px",
-                display: "flex",
-                justifyContent: "center",
-                borderRadius: "0px",
-              }}
-              onDragStart={(event) => onDragStart(event, "tools")}
-            >
-              tools
-            </Card>
-          </CardContent> */}
-        {/* </Card> */}
-
         <div className="w-10 p-4">
 
           <Accordion type="single" collapsible>
             <AccordionItem value="item-1">
               <AccordionTrigger>templates</AccordionTrigger>
               <AccordionContent>
-              <Card
-              draggable
-              style={{
-                cursor: "grab",
-                display: "flex",
-                justifyContent: "center",
-                borderRadius: "0px",
-              }}
-              onDragStart={(event) => onDragStart(event, "tools")}
-            >
-              tools
-            </Card>
+              {prompts.map(prompt=>
+                 (
+                  <Card
+                  draggable
+                  style={{
+                    cursor: "grab",
+                    display: "flex",
+                    justifyContent: "center",
+                    borderRadius: "0px",
+                    marginBottom:"10px"
+                  }}
+                  onDragStart={(event) => onDragStart(event, "tools",prompt.id)}
+                >
+                  {prompt.id}
+                </Card>
+                ))}
+             
               </AccordionContent>
             </AccordionItem>
           </Accordion>

@@ -52,6 +52,7 @@ export default function AreYouSureToDelete({
             >Cancel</AlertDialogCancel>
             <AlertDialogAction
              onClick={() => {
+              setIsOpen(false);
               callBack()
             }}
             >Delete</AlertDialogAction>
