@@ -28,6 +28,7 @@ import axios from "axios";
 import React, { useCallback, useEffect } from "react";
 import { useState, DragEvent } from "react";
 import BuildPoolNode from "../services/DragAndDrop/PoolBuilder";
+import BuildActivityNode from "../services/DragAndDrop/ActivityBuilder";
 import {
   ReactFlow,
   addEdge,
@@ -84,6 +85,7 @@ import MainSidebar from "./MainSidebar";
 const OverviewFlow = () => {
   const { toast } = useToast();
   const [poolModalOpen, setPoolModalOpen] = useState(false);
+  const [activityModalOpen, setActivityModalOpen] = useState(false);
   const [reactFlowInstance, setReactFlowInstance] = useState();
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
@@ -116,6 +118,9 @@ const OverviewFlow = () => {
       console.log(event);
       if (_type == "pool") {
         setPoolModalOpen(true);
+      }
+      if (_type == "activity") {
+        setActivityModalOpen(true);
       }
     }
   };
@@ -209,7 +214,7 @@ const OverviewFlow = () => {
 
             <ResizablePanel defaultSize={20}>
               <MainSidebar />
-              <InsertValueModal
+              {poolModalOpen && (<InsertValueModal
                 placeholder={"write here.."}
                 isOpen={poolModalOpen}
                 setIsOpen={setPoolModalOpen}
@@ -237,7 +242,37 @@ const OverviewFlow = () => {
                     });
                   }
                 }}
-              />
+              />)}
+
+              {activityModalOpen && (<InsertValueModal
+                placeholder={"write here.."}
+                isOpen={activityModalOpen}
+                setIsOpen={setActivityModalOpen}
+                supTitle={"set the task name."}
+                title={"Write Task Name"}
+                setValueName={async (v) => {
+                  let node = BuildActivityNode(
+                    position,
+                    type,
+                    nodes,
+                    v,
+                    setNodes,
+                    getId
+                  );
+                  if (node != null) {
+                    setNodes((nds) => nds.concat(node));
+                    toast({
+                      title: "✅ Greate!",
+                      description: `the pool added successfully.`,
+                    });
+                  } else {
+                    toast({
+                      title: "❌ Uh oh!",
+                      description: `something went wrong sorry.`,
+                    });
+                  }
+                }}
+              />)}
             </ResizablePanel>
           </ResizablePanelGroup>
         </div>

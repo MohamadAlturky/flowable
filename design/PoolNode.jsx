@@ -69,40 +69,13 @@ function PoolNode({ id, data, selected}) {
             Insert Lane
             <ContextMenuShortcut>⌘</ContextMenuShortcut>
           </ContextMenuItem>
-          {/* <ContextMenuItem inset>
-          Reload
-          <ContextMenuShortcut>⌘R</ContextMenuShortcut>
-        </ContextMenuItem> */}
-          {/* <ContextMenuSub>
-          <ContextMenuSubTrigger inset>More Tools</ContextMenuSubTrigger>
-          <ContextMenuSubContent className="w-48">
-            <ContextMenuItem>
-              Save Page As...
-              <ContextMenuShortcut>⇧⌘S</ContextMenuShortcut>
-            </ContextMenuItem>
-            <ContextMenuItem>Create Shortcut...</ContextMenuItem>
-            <ContextMenuItem>Name Window...</ContextMenuItem>
-            <ContextMenuSeparator />
-            <ContextMenuItem>Developer Tools</ContextMenuItem>
-          </ContextMenuSubContent>
-        </ContextMenuSub> */}
+          
           <ContextMenuSeparator />
-          {/* <ContextMenuCheckboxItem checked>
-          Show Bookmarks Bar
-          <ContextMenuShortcut>⌘⇧B</ContextMenuShortcut>
-        </ContextMenuCheckboxItem> */}
+
           <ContextMenuCheckboxItem
            onClick={(e) => { setEditModalOpen(true) }}>
           Edit</ContextMenuCheckboxItem>
-          {/* <ContextMenuSeparator /> */}
-          {/* <ContextMenuRadioGroup value="pedro"> */}
-          {/* <ContextMenuLabel inset>People</ContextMenuLabel> */}
-          {/* <ContextMenuSeparator /> */}
-          {/* <ContextMenuRadioItem value="pedro">
-            Pedro Duarte
-          </ContextMenuRadioItem> */}
-          {/* <ContextMenuRadioItem value="colm">Colm Tuite</ContextMenuRadioItem> */}
-          {/* </ContextMenuRadioGroup> */}
+
         </ContextMenuContent>
       </ContextMenu>
       <AreYouSureToDelete
@@ -126,11 +99,10 @@ function PoolNode({ id, data, selected}) {
               supTitle={"set the sub participant name."}
               title={"Write Lane Name"}
               setValueName={(v)=>{
-                let node = BuildLaneNode(reactFlow.getNodes(), v, id,data.getId)
+                let node = BuildLaneNode(reactFlow.getNodes(), v, id,data.getId,data.setNodes)
                 if(node != null)
                 {
                   data.setNodes((nds) => nds.concat(node));
-                  // console.log(reactFlow.getNodes());
                   toast({
                     title: "✅ Greate!",
                     description: `the lane added successfully.`,

@@ -48,6 +48,19 @@ export default function MainSidebar() {
             >
               <span>pool</span>
             </Card>
+            <Card
+              draggable
+              style={{
+                cursor: "grab",
+                // width: "200px",
+                display: "flex",
+                justifyContent: "center",
+                borderRadius: "0px",
+              }}
+              onDragStart={(event) => onDragStart(event, "activity")}
+            >
+              <span>task</span>
+            </Card>
           </CardContent>
         </Card>
       </TabsContent>
