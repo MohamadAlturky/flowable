@@ -12,9 +12,8 @@ import {
 } from "@/components/ui/drawer"
 
 
-export default function InsertValueModal({ isOpen, setIsOpen, setValueName, title, supTitle, placeholder,label,defaultValue }) {
-  if(defaultValue == undefined || defaultValue == null)
-  {
+export default function InsertValueModal({ isOpen, setIsOpen, setValueName, title, supTitle, placeholder, label, defaultValue }) {
+  if (defaultValue == undefined || defaultValue == null) {
     defaultValue = ""
   }
   const [value, setValue] = React.useState(defaultValue)
@@ -23,22 +22,22 @@ export default function InsertValueModal({ isOpen, setIsOpen, setValueName, titl
 
   React.useEffect(() => {
     console.log(inputRef);
-    setTimeout(()=>{
+    setTimeout(() => {
       if (isOpen) {
-        try{
+        try {
           inputRef.current.focus();
-        }catch(err){
+        } catch (err) {
           console.log(err);
         }
       }
-    },0)
+    }, 0)
   }, [isOpen]);
   return (
     <Drawer open={isOpen} onClose={() => {
       setIsOpen(false)
     }}>
       <DrawerContent>
-        <form onSubmit={(e)=>{
+        <form onSubmit={(e) => {
           e.preventDefault()
           if (value == "") {
             console.log(value);
@@ -69,23 +68,27 @@ export default function InsertValueModal({ isOpen, setIsOpen, setValueName, titl
               </div>
             </div>
             <DrawerFooter>
-              <Button 
-              // onClick={() => {
-              //   if (value == "") {
-              //     toast({
-              //       title: "❌ Uh oh!",
-              //       description: `please fill the input section.`,
-              //     })
-              //   }
-              //   else {
-              //     setIsOpen(false)
-              //     setValue("")
-              //     setValueName(value)
-              //   }
-              // }}
-              type="submit"
-              >{label||"Insert"}</Button>
-              <Button variant="outline" onClick={() => { setIsOpen(false) }}>Cancel</Button>
+              <Button
+                // onClick={() => {
+                //   if (value == "") {
+                //     toast({
+                //       title: "❌ Uh oh!",
+                //       description: `please fill the input section.`,
+                //     })
+                //   }
+                //   else {
+                //     setIsOpen(false)
+                //     setValue("")
+                //     setValueName(value)
+                //   }
+                // }}
+                type="submit"
+              >{label || "Insert"}</Button>
+              <Button variant="outline" onClick={() => {
+                setIsOpen(false)
+                setValue("")
+              }
+              }>Cancel</Button>
             </DrawerFooter>
             <div className="mt-3 h-[120px]">
             </div>
