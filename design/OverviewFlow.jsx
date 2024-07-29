@@ -151,6 +151,7 @@ const OverviewFlow = () => {
                     edges={edges}
                     onNodesChange={(e) => {
                       onNodesChange(e);
+                      // console.log(e);
                     }}
                     onEdgesChange={onEdgesChange}
                     onNodeDoubleClick={onNodeDoubleClick}
