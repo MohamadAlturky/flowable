@@ -144,8 +144,8 @@ const OverviewFlow = () => {
         >
           <ResizablePanelGroup direction="horizontal" className="h-screen">
             <ResizablePanel defaultSize={80}>
-              <ContextMenu>
-                <ContextMenuTrigger>
+              {/* <ContextMenu>
+                <ContextMenuTrigger> */}
                   <ReactFlow
                     nodes={nodes}
                     edges={edges}
@@ -183,7 +183,7 @@ const OverviewFlow = () => {
                     </Controls>
                     <Background variant={BackgroundVariant.Dots} />
                   </ReactFlow>
-                </ContextMenuTrigger>
+                {/* </ContextMenuTrigger>
                 <ContextMenuContent className="w-64">
                   <ContextMenuItem
                     inset
@@ -207,7 +207,7 @@ const OverviewFlow = () => {
                     Print
                   </ContextMenuCheckboxItem>
                 </ContextMenuContent>
-              </ContextMenu>
+              </ContextMenu> */}
             </ResizablePanel>
 
             <ResizableHandle withHandle />

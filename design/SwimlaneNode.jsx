@@ -31,13 +31,13 @@ function SwimlaneNode({ id, data, selected }) {
     <>
       <ContextMenu>
         <ContextMenuTrigger >
-          <div
+          <NodeResizer minWidth={450} isVisible={selected} minHeight={100} />
+          {/* <div
             style={{
               width: "447px",
               height: "100%",
             }}
-          >
-            <NodeResizer minWidth={450} isVisible={selected} minHeight={100} />
+          > */}
             <div
               style={{
                 alignItems: "center",
@@ -46,6 +46,12 @@ function SwimlaneNode({ id, data, selected }) {
                 width: "50px",
                 height: "100%",
                 borderRight: "1px solid",
+                // position:"absolute",
+                // left:-50,
+                // backgroundColor:"salmon"
+                backgroundColor: "#4a00ff33",
+                // borderRadius: "3px",
+                border: "1px solid rgb(26, 25, 43)",
               }}
             >
               <div
@@ -60,7 +66,7 @@ function SwimlaneNode({ id, data, selected }) {
                 {data.label}
               </div>
             </div>
-          </div>
+          {/* </div> */}
         </ContextMenuTrigger>
         <ContextMenuContent className="w-64">
           <ContextMenuItem inset onClick={(e) => { setModalOpen(true) }}>
