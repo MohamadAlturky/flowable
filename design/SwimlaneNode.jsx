@@ -51,7 +51,7 @@ function SwimlaneNode({ id, data, selected }) {
                 // backgroundColor:"salmon"
                 backgroundColor: "#4a00ff33",
                 // borderRadius: "3px",
-                border: "1px solid rgb(26, 25, 43)",
+                // border: "1px solid rgb(26, 25, 43)",
               }}
             >
               <div

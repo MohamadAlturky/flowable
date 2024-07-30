@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { useReactFlow, NodeResizer } from "@xyflow/react";
+import { useReactFlow, NodeResizer,useNodes } from "@xyflow/react";
 import React from "react";
 import AreYouSureToDelete from "../components/modals/AreYouSureToDelete"
 import InsertValueModal from "../components/modals/InsertValueModal"
@@ -46,14 +46,14 @@ function PoolNode({ id, data, selected }) {
                 justifyContent: "center",
                 display: "flex",
                 width: "50px",
-                height: "100.5%",
+                height: "100%",
                 borderRight: "1px solid",
-                position: "absolute",
-                left: -50,
+                // position: "absolute",
+                // left: -50,
                 // backgroundColor:"salmon"
                 backgroundColor: "#4a00ff33",
                 // borderRadius: "3px",
-                border: "1px solid rgb(26, 25, 43)",
+                // border: "1px solid rgb(26, 25, 43)",
               }}
             >
               <div
@@ -71,6 +71,7 @@ function PoolNode({ id, data, selected }) {
               </div>
             </div>
           {/* </div> */}
+       
         </ContextMenuTrigger>
         <ContextMenuContent className="w-64">
           <ContextMenuItem inset onClick={(e) => { setModalOpen(true) }}>
