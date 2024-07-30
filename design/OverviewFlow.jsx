@@ -94,7 +94,7 @@ const OverviewFlow = () => {
   const onInit = (rfi) => setReactFlowInstance(rfi);
 
   const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge(params, eds)),
+    (params) => setEdges((eds) => addEdge({...params, animated:true}, eds)),
     []
   );
 
@@ -157,7 +157,7 @@ const OverviewFlow = () => {
                 setProcess(v)
                 toast({
                   title: "✅ Greate!",
-                  description: `the prompt content edited successfully.`,
+                  description: `the process content edited successfully.`,
                 });
               }
             }}
