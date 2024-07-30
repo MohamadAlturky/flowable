@@ -19,7 +19,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-
+import InsertValueAreaModal from '../components/modals/InsertValueAreaModal'
 import { useToast } from "@/components/ui/use-toast";
 import { FitViewIcon } from "./Icons/FitView";
 import { ControlButton } from "@xyflow/react";
@@ -84,7 +84,9 @@ const nodeClassName = (node) => node.type;
 import MainSidebar from "./MainSidebar";
 const OverviewFlow = () => {
   const { toast } = useToast();
+  const [process, setProcess] = useState("");
   const [poolModalOpen, setPoolModalOpen] = useState(false);
+  const [processModalOpen, setProcessModalOpen] = useState(false);
   const [activityModalOpen, setActivityModalOpen] = useState(false);
   const [reactFlowInstance, setReactFlowInstance] = useState();
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
@@ -142,10 +144,28 @@ const OverviewFlow = () => {
             height: "100vh",
           }}
         >
+          <InsertValueAreaModal
+            placeholder={"write here.."}
+            isOpen={processModalOpen}
+            defaultValue={process}
+            setIsOpen={setProcessModalOpen}
+            label={"Edit"}
+            supTitle={"edit the process content."}
+            title={"Process Description"}
+            setValueName={async (v) => {
+              if (v != process) {
+                setProcess(v)
+                toast({
+                  title: "✅ Greate!",
+                  description: `the prompt content edited successfully.`,
+                });
+              }
+            }}
+          />
           <ResizablePanelGroup direction="horizontal" className="h-screen">
             <ResizablePanel defaultSize={80}>
-              {/* <ContextMenu>
-                <ContextMenuTrigger> */}
+              <ContextMenu>
+                <ContextMenuTrigger>
                   <ReactFlow
                     nodes={nodes}
                     edges={edges}
@@ -184,31 +204,19 @@ const OverviewFlow = () => {
                     </Controls>
                     <Background variant={BackgroundVariant.Dots} />
                   </ReactFlow>
-                {/* </ContextMenuTrigger>
+                </ContextMenuTrigger>
                 <ContextMenuContent className="w-64">
                   <ContextMenuItem
                     inset
                     onClick={(e) => {
-                      setModalOpen(true);
+                      setProcessModalOpen(true);
                     }}
                   >
-                    Adjust
+                    process description
                     <ContextMenuShortcut>⌘</ContextMenuShortcut>
                   </ContextMenuItem>
-                  <ContextMenuItem
-                    inset
-                  >
-                    Ask AI
-                    <ContextMenuShortcut>⌘</ContextMenuShortcut>
-                  </ContextMenuItem>
-
-                  <ContextMenuSeparator />
-
-                  <ContextMenuCheckboxItem>
-                    Print
-                  </ContextMenuCheckboxItem>
                 </ContextMenuContent>
-              </ContextMenu> */}
+              </ContextMenu>
             </ResizablePanel>
 
             <ResizableHandle withHandle />

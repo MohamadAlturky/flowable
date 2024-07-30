@@ -44,10 +44,10 @@ export default function InsertValueAreaModal({ isOpen, setIsOpen, setValueName, 
           e.preventDefault()
           if (value == "") {
             console.log(value);
-            toast({
-              title: "❌ Uh oh!",
-              description: `please fill the input section.`,
-            })
+            // toast({
+            //   title: "❌ Uh oh!",
+            //   description: `please fill the input section.`,
+            // })
           }
           else {
             setIsOpen(false)
