@@ -51,13 +51,15 @@ import SwimlaneNode from "./SwimlaneNode";
 import PoolNode from "./PoolNode";
 import CircleNode from "./CircleNode";
 import TextNode from "./TextNode";
+import IntermediateEventNode from "./IntermediateEventNode";
+import StartEventNode from "./StartEventNode";
+import EndEventNode from "./EndEventNode";
 import ButtonEdge from "./ButtonEdge";
 import Activity from "./Activity";
 import Gateway from "./Gateway";
 import InsertValueModal from "../components/modals/InsertValueModal";
 import "@xyflow/react/dist/style.css";
 import "../css/overview.css";
-
 const nodeTypes = {
   annotation: AnnotationNode,
   tools: ToolbarNode,
@@ -67,7 +69,13 @@ const nodeTypes = {
   swimlane: SwimlaneNode,
   activity: Activity,
   gateway: Gateway,
+  interevent: IntermediateEventNode,
+  endevent: EndEventNode,
+  startevent: StartEventNode
 };
+import InterEventBuilder from "../services/DragAndDrop/InterEventBuilder";
+import EndEventBuilder from "../services/DragAndDrop/EndEventBuilder";
+import StartEventBuilder from "../services/DragAndDrop/StartEventBuilder";
 
 const edgeTypes = {
   button: ButtonEdge,
@@ -88,13 +96,14 @@ const OverviewFlow = () => {
   const [poolModalOpen, setPoolModalOpen] = useState(false);
   const [processModalOpen, setProcessModalOpen] = useState(false);
   const [activityModalOpen, setActivityModalOpen] = useState(false);
+  const [eventModalOpen, setEventModalOpen] = useState(false);
   const [reactFlowInstance, setReactFlowInstance] = useState();
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const onInit = (rfi) => setReactFlowInstance(rfi);
 
   const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge({...params, animated:true}, eds)),
+    (params) => setEdges((eds) => addEdge({ ...params, animated: true }, eds)),
     []
   );
 
@@ -123,6 +132,15 @@ const OverviewFlow = () => {
       }
       if (_type == "activity") {
         setActivityModalOpen(true);
+      }
+      if (_type == "startevent") {
+        setEventModalOpen(true)
+      }
+      if (_type == "interevent") {
+        setEventModalOpen(true)
+      }
+      if (_type == "endevent") {
+        setEventModalOpen(true)
       }
     }
   };
@@ -282,6 +300,62 @@ const OverviewFlow = () => {
                   }
                 }}
               />)}
+              {eventModalOpen && (<InsertValueModal
+                placeholder={"write here.."}
+                isOpen={eventModalOpen}
+                setIsOpen={setEventModalOpen}
+                supTitle={"set the task name."}
+                title={"Write Task Name"}
+                setValueName={async (v) => {
+                  
+                  let node = null
+                  
+                  if (type == "startevent") {
+                    node = StartEventBuilder(
+                      position,
+                      type,
+                      nodes,
+                      v,
+                      setNodes,
+                      getId
+                    );
+                  }
+                  if (type == "interevent") {
+                    node = InterEventBuilder(
+                      position,
+                      type,
+                      nodes,
+                      v,
+                      setNodes,
+                      getId
+                    );
+                  }
+                  if (type == "endevent") {
+                    node = EndEventBuilder(
+                      position,
+                      type,
+                      nodes,
+                      v,
+                      setNodes,
+                      getId
+                    );
+                  }
+
+                  if (node != null) {
+                    setNodes((nds) => nds.concat(node));
+                    toast({
+                      title: "✅ Greate!",
+                      description: `the pool added successfully.`,
+                    });
+                  } else {
+                    toast({
+                      title: "❌ Uh oh!",
+                      description: `something went wrong sorry.`,
+                    });
+                  }
+                }}
+              />)}
+
             </ResizablePanel>
           </ResizablePanelGroup>
         </div>

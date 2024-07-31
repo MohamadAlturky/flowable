@@ -61,6 +61,45 @@ export default function MainSidebar() {
             >
               <span>task</span>
             </Card>
+            <Card
+              draggable
+              style={{
+                cursor: "grab",
+                // width: "200px",
+                display: "flex",
+                justifyContent: "center",
+                borderRadius: "0px",
+              }}
+              onDragStart={(event) => onDragStart(event, "startevent")}
+            >
+              <span>start event</span>
+            </Card>
+            <Card
+              draggable
+              style={{
+                cursor: "grab",
+                // width: "200px",
+                display: "flex",
+                justifyContent: "center",
+                borderRadius: "0px",
+              }}
+              onDragStart={(event) => onDragStart(event, "endevent")}
+            >
+              <span>end event</span>
+            </Card>
+            <Card
+              draggable
+              style={{
+                cursor: "grab",
+                // width: "200px",
+                display: "flex",
+                justifyContent: "center",
+                borderRadius: "0px",
+              }}
+              onDragStart={(event) => onDragStart(event, "interevent")}
+            >
+              <span>intermediate event</span>
+            </Card>
           </CardContent>
         </Card>
       </TabsContent>
