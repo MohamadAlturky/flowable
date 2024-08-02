@@ -27,8 +27,9 @@ import {
 } from "@/components/ui/carousel"
 
 
-export default function ReportModal({ isOpen, setIsOpen, title, supTitle, events }) {
+export default function ReportModal({ isOpen, setIsOpen, title, supTitle, report }) {
   const { toast } = useToast()
+  console.log(report);
 
   return (
     <Drawer open={isOpen} onClose={() => {
@@ -47,7 +48,7 @@ export default function ReportModal({ isOpen, setIsOpen, title, supTitle, events
                 <Carousel>
                   <CarouselContent>
 
-                    {events.map(e =>
+                    {report.map(e =>
                       <>
                         <CarouselItem>
                           <Card className="mt-4 rounded-none">

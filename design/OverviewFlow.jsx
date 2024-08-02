@@ -25,7 +25,6 @@ import InsertValueAreaModal from '../components/modals/InsertValueAreaModal'
 import { useToast } from "@/components/ui/use-toast";
 import { FitViewIcon } from "./Icons/FitView";
 import { ControlButton } from "@xyflow/react";
-import apiUrl from "../configurations/apiConfiguration.json";
 import axios from "axios";
 import React, { useCallback, useEffect } from "react";
 import { useState, DragEvent } from "react";
@@ -61,6 +60,8 @@ import Activity from "./Activity";
 import Gateway from "./Gateway";
 import InsertValueModal from "../components/modals/InsertValueModal";
 import ReportModal from "../components/modals/ReportModal";
+import GatewaysReportModal from "../components/modals/GatewaysReportModal";
+import PoolsReportModal from "../components/modals/PoolsReportModal";
 import "@xyflow/react/dist/style.css";
 import "../css/overview.css";
 const nodeTypes = {
@@ -93,11 +94,16 @@ const getId = () => `${id++}`;
 
 const nodeClassName = (node) => node.type;
 import MainSidebar from "./MainSidebar";
+import apiUrl from "../configurations/apiConfiguration.json";
+
 const OverviewFlow = () => {
   const { toast } = useToast();
   const [process, setProcess] = useState("");
   const [poolModalOpen, setPoolModalOpen] = useState(false);
   const [reportModalOpen, setReportModalOpen] = useState(false);
+  const [gatewaysReportModalOpen, setGatewaysReportModalOpen] = useState(false);
+  const [poolsReportModalOpen, setPoolsReportModalOpen] = useState(false);
+  const [tasksReportModalOpen, setTasksReportModalOpen] = useState(false);
   const [processModalOpen, setProcessModalOpen] = useState(false);
   const [activityModalOpen, setActivityModalOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -105,34 +111,8 @@ const OverviewFlow = () => {
   const [reactFlowInstance, setReactFlowInstance] = useState();
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-  const [events, setEvents] = useState([
-    {
-      "name": "Login Event",
-      "type": "Start Event",
-      "description": "This is not explicitly mentioned in the process description, but it can be inferred as a start event for logging into the online shop account."
-    },
-    {
-      "name": "Payment/Installment Agreement Selection Event",
-      "type": "Start Event",
-      "description": "The user starts an order by selecting payment method after logging in."
-    },
-    {
-      "name": "Free Reward Selection Event",
-      "type": "Intermediate Event",
-      "description": "After selecting items, the user chooses between multiple options for a free reward, which is independent of the payment activities."
-    },
-    {
-      "name": "Item Delivery Event",
-      "type": "End Event",
-      "description": "This represents the termination point of the delivery activity, where items are delivered to the user."
-    },
-    {
-      "name": "Return/Exchange Event",
-      "type": "End Event",
-      "description": "The user has the right to return items for exchange, which triggers a new delivery event."
-    }
-  ])
-  console.log(events);
+  const [report, setReport] = useState(null)
+
   const onInit = (rfi) => setReactFlowInstance(rfi);
 
   const onConnect = useCallback(
@@ -177,7 +157,42 @@ const OverviewFlow = () => {
       }
     }
   };
-
+  const generate = () => {
+    if (process == "") {
+      toast({
+        title: "❌ Error!",
+        description: `fill the process description please`,
+      });
+      return;
+    }
+    setIsGenerating(true);
+    toast({
+      title: "Greate!",
+      description: `we are working on generating the diagram`,
+    });
+    const axiosInstance = axios.create();
+    const data = {
+      "process_description": process
+    }
+    axiosInstance.post(apiUrl.baseUrl + "/generate/report", data)
+      .then(res => {
+        console.log(res.data.report);
+        setReport(res.data.report)
+        toast({
+          title: "✅ Greate!",
+          description: `the report generated successfully.`,
+        });
+      }).catch(err => {
+        console.log(err)
+        console.log(err.toJSON())
+        toast({
+          title: "❌ Error!",
+          description: `error occured sorry!`,
+        });
+      }).finally(() => {
+        setIsGenerating(false)
+      });
+  }
   /////
   const onNodeDoubleClick = async (_, node) => {
     // let _newNodes = await HandleDoubleClick(node, nodes);
@@ -196,7 +211,7 @@ const OverviewFlow = () => {
           width: "100vw",
           height: "100vh",
           position: "absolute",
-          // zIndex:100,
+          zIndex: 100,
           backgroundColor: "white",
         }}>
           <PuffLoader size={100} speedMultiplier={0.8} />
@@ -286,37 +301,78 @@ const OverviewFlow = () => {
                       <ContextMenuItem inset
 
                         onClick={(e) => {
-                          setIsGenerating(true);
-                          toast({
-                            title: "Greate!",
-                            description: `we are working on generating the diagram`,
-                          });
+                          generate()
                         }}
                       >
                         Generate Diagram
                         <ContextMenuShortcut>⌘</ContextMenuShortcut>
                       </ContextMenuItem>
+
+                      <ContextMenuSub>
+                        <ContextMenuSubTrigger inset>Reports</ContextMenuSubTrigger>
+                        <ContextMenuSubContent className="w-48">
+                          <ContextMenuItem onClick={() => {
+                            if (report) {
+
+                              setReportModalOpen(true)
+                            }
+                            else {
+                              toast({
+                                title: "❌ Uh oh!",
+                                description: `you have to generate the reports.`,
+                              });
+                            }
+                          }}>
+                            Events
+                          </ContextMenuItem>
+                          <ContextMenuItem onClick={() => {
+                            if (report) {
+                              setPoolsReportModalOpen(true)
+                            }
+                            else {
+                              toast({
+                                title: "❌ Uh oh!",
+                                description: `you have to generate the reports.`,
+                              });
+                            }
+                          }}>
+                            Pools Lanes
+                          </ContextMenuItem>
+                          <ContextMenuItem onClick={() => {
+                            if (report) {
+                              setTasksReportModalOpen(true)
+                            }
+                            else {
+                              toast({
+                                title: "❌ Uh oh!",
+                                description: `you have to generate the reports.`,
+                              });
+                            }
+                          }}>
+                            Tasks
+                          </ContextMenuItem>
+                          <ContextMenuItem onClick={() => {
+                            if (report) {
+
+                              setGatewaysReportModalOpen(true)
+                            }
+                            else {
+                              toast({
+                                title: "❌ Uh oh!",
+                                description: `you have to generate the reports.`,
+                              });
+                            }
+                          }}>
+                            Gateways
+                          </ContextMenuItem>
+                          <ContextMenuSeparator />
+                          <ContextMenuItem>Diagram Merge Tools</ContextMenuItem>
+                        </ContextMenuSubContent>
+                      </ContextMenuSub>
                     </>
+
                   )}
-                  <ContextMenuSub>
-                    <ContextMenuSubTrigger inset>Reports</ContextMenuSubTrigger>
-                    <ContextMenuSubContent className="w-48">
-                      <ContextMenuItem onClick={() => { setReportModalOpen(true) }}>
-                        Events
-                      </ContextMenuItem>
-                      <ContextMenuItem>
-                        Pools Lanes
-                      </ContextMenuItem>
-                      <ContextMenuItem>
-                        Tasks
-                      </ContextMenuItem>
-                      <ContextMenuItem>
-                        Gateways
-                      </ContextMenuItem>
-                      <ContextMenuSeparator />
-                      <ContextMenuItem>Diagram Merge Tools</ContextMenuItem>
-                    </ContextMenuSubContent>
-                  </ContextMenuSub>
+
                 </ContextMenuContent>
 
               </ContextMenu>
@@ -440,8 +496,14 @@ const OverviewFlow = () => {
                   }
                 }}
               />)}
-
-              <ReportModal isOpen={reportModalOpen} setIsOpen={setReportModalOpen} title={"Events Report"} supTitle={"this report is generated by AI."} events={events} />
+              {report && (
+                <>
+                  <ReportModal isOpen={reportModalOpen} setIsOpen={setReportModalOpen} title={"Events Report"} supTitle={"this report is generated by AI."} report={report.events_report.content} />
+                  <ReportModal isOpen={tasksReportModalOpen} setIsOpen={setTasksReportModalOpen} title={"Tasks Report"} supTitle={"this report is generated by AI."} report={report.tasks_report.content} />
+                  <GatewaysReportModal isOpen={gatewaysReportModalOpen} setIsOpen={setGatewaysReportModalOpen} title={"Gateways Report"} supTitle={"this report is generated by AI."} report={report.gateways_report.content} />
+                  <PoolsReportModal isOpen={poolsReportModalOpen} setIsOpen={setPoolsReportModalOpen} title={"Pools And Lanes Report"} supTitle={"this report is generated by AI."} report={report.poolsLanes_report.content.pools} />
+                </>
+              )}
             </ResizablePanel>
           </ResizablePanelGroup>
         </div>
