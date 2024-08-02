@@ -63,14 +63,21 @@ export default function GatewaysReportModal({ isOpen, setIsOpen, title, supTitle
                               <div className="flex justify-center">
                                 <Carousel className="w-2/3" orientation="vertical">
                                   <CarouselContent className="-mt-1 h-[200px]">
-                                    {e.outputs.map(f => (
+                                    
+                                    {e.inputs.map(f => (
                                       <>
                                         <CarouselItem>
                                           <Card className="mt-4 rounded-none">
                                             <CardHeader>
-                                              <CardTitle>Task : {f.name}</CardTitle>
+                                              <CardTitle>Task : {f.name} &ensp;
+                                              <span style={{
+                                                color:"green"
+                                              }}>
+                                                (input task)
+                                              </span>
+                                              </CardTitle>
                                               <CardDescription>
-                                                type : output from the gateway {e.name}
+                                                type : input for the gateway {e.name}
                                               </CardDescription>
                                               <CardDescription>
                                                 {f.description}
@@ -81,14 +88,19 @@ export default function GatewaysReportModal({ isOpen, setIsOpen, title, supTitle
 
                                       </>
                                     ))}
-                                    {e.inputs.map(f => (
+                                    {e.outputs.map(f => (
                                       <>
                                         <CarouselItem>
                                           <Card className="mt-4 rounded-none">
                                             <CardHeader>
-                                              <CardTitle>Task : {f.name}</CardTitle>
+                                              <CardTitle>Task : {f.name} &ensp; <span style={{
+                                                color:"blue"
+                                              }}>
+                                                (output task)
+                                              </span>
+                                              </CardTitle>
                                               <CardDescription>
-                                                type : input for the gateway {e.name}
+                                                type : output from the gateway {e.name}
                                               </CardDescription>
                                               <CardDescription>
                                                 {f.description}
@@ -102,12 +114,14 @@ export default function GatewaysReportModal({ isOpen, setIsOpen, title, supTitle
                                   </CarouselContent>
                                   <CarouselPrevious style={{
                                       position:"absolute",
-                                      top:"-10px"
+                                      top:"160px",
+                                      left:"280px"
                                     }}/>
                                   <CarouselNext
                                    style={{
                                     position:"absolute",
-                                    top:"160px"
+                                    top:"160px",
+                                    left:"330px"
                                   }} />
                                 </Carousel>
                               </div>
@@ -115,41 +129,6 @@ export default function GatewaysReportModal({ isOpen, setIsOpen, title, supTitle
                           </Card>
                         </CarouselItem>
 
-                        {/* {e.inputs.map(f => (
-                          <CarouselItem>
-                            <Card className="mt-4 rounded-none">
-                              <CardHeader>
-                                <CardTitle>
-                                  {f.name}
-                                </CardTitle>
-                              </CardHeader>
-                              <CardDescription>
-                                input for {e.name}
-                              </CardDescription>
-                              <CardContent className="space-y-2">
-                                {f.description}
-                              </CardContent>
-                            </Card>
-                          </CarouselItem>
-                        ))}
-
-                        {e.outputs.map(f => (
-                          <CarouselItem>
-                            <Card className="mt-4 rounded-none">
-                              <CardHeader>
-                                <CardTitle>
-                                  {f.name}
-                                </CardTitle>
-                              </CardHeader>
-                              <CardDescription>
-                                output for {e.name}
-                              </CardDescription>
-                              <CardContent className="space-y-2">
-                                {f.description}
-                              </CardContent>
-                            </Card>
-                          </CarouselItem>
-                        ))} */}
                       </>
                     )}
                   </CarouselContent>
