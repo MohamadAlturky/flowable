@@ -158,45 +158,45 @@ const OverviewFlow = () => {
     }
   };
 
-  const generateDiagram = () => {
-    setIsGenerating(true);
-    toast({
-      title: "Greate!",
-      description: `we are working on generating the diagram`,
-    });
+  // const generateDiagram = () => {
+  //   setIsGenerating(true);
+  //   toast({
+  //     title: "Greate!",
+  //     description: `we are working on generating the diagram`,
+  //   });
 
-    const axiosInstance = axios.create();
-    const data = {
-      "process_description": process,
-      "report":report
-    }
+  //   const axiosInstance = axios.create();
+  //   const data = {
+  //     "process_description": process,
+  //     "report":report
+  //   }
 
-    axiosInstance.post(apiUrl.baseUrl + "/generate/diagram", data)
-      .then(res => {
-        console.log("res.data.report");
-        console.log("res.data.report");
-        console.log("res.data.report");
-        console.log("res.data.report");
-        console.log("res.data.report");
-        console.log("res.data.report");
-        console.log("res.data.report");
-        console.log(res.data);
-        // setReport(res.data.report)
-        toast({
-          title: "✅ Greate!",
-          description: `the diagram generated successfully.`,
-        });
-      }).catch(err => {
-        console.log(err)
-        console.log(err.toJSON())
-        toast({
-          title: "❌ Error!",
-          description: `error occured sorry!`,
-        });
-      }).finally(() => {
-        setIsGenerating(false)
-      });
-  }
+  //   axiosInstance.post(apiUrl.baseUrl + "/generate/diagram", data)
+  //     .then(res => {
+  //       console.log("res.data.report");
+  //       console.log("res.data.report");
+  //       console.log("res.data.report");
+  //       console.log("res.data.report");
+  //       console.log("res.data.report");
+  //       console.log("res.data.report");
+  //       console.log("res.data.report");
+  //       console.log(res.data);
+  //       // setReport(res.data.report)
+  //       toast({
+  //         title: "✅ Greate!",
+  //         description: `the diagram generated successfully.`,
+  //       });
+  //     }).catch(err => {
+  //       console.log(err)
+  //       console.log(err.toJSON())
+  //       toast({
+  //         title: "❌ Error!",
+  //         description: `error occured sorry!`,
+  //       });
+  //     }).finally(() => {
+  //       setIsGenerating(false)
+  //     });
+  // }
   const generate = () => {
     if (process == "") {
       toast({
@@ -214,10 +214,16 @@ const OverviewFlow = () => {
     const data = {
       "process_description": process
     }
-    axiosInstance.post(apiUrl.baseUrl + "/generate/report", data)
+    axiosInstance.post(apiUrl.baseUrl + "/generate/direct_with_report", data)
       .then(res => {
         console.log(res.data.report);
         setReport(res.data.report)
+
+        console.log("res.data.connections");
+        console.log(res.data.connections);
+        console.log("res.data.annotations");
+        console.log(res.data.annotations);
+
         toast({
           title: "✅ Greate!",
           description: `the report generated successfully.`,
@@ -338,6 +344,8 @@ const OverviewFlow = () => {
                         Process Description
                         <ContextMenuShortcut>⌘</ContextMenuShortcut>
                       </ContextMenuItem>
+                          <ContextMenuSeparator />
+
                       <ContextMenuItem inset
 
                         onClick={(e) => {
@@ -405,10 +413,10 @@ const OverviewFlow = () => {
                           }}>
                             Gateways
                           </ContextMenuItem>
-                          <ContextMenuSeparator />
-                          <ContextMenuItem  onClick={() => {
-                            generateDiagram()
-                          }}>Diagram Merge Tools</ContextMenuItem>
+                          {/* <ContextMenuSeparator />/ */}
+                          {/* <ContextMenuItem  onClick={() => { */}
+                            {/* generateDiagram() */}
+                          {/* }}>Diagram Merge Tools</ContextMenuItem> */}
                         </ContextMenuSubContent>
                       </ContextMenuSub>
                     </>
