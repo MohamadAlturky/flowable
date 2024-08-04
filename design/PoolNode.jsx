@@ -48,10 +48,12 @@ function PoolNode({ id, data, selected }) {
                 width: "50px",
                 height: "100%",
                 borderRight: "1px solid",
+                zIndex:100,
+                backgroundColor:"white"
                 // position: "absolute",
                 // left: -50,
                 // backgroundColor:"salmon"
-                backgroundColor: "#4a00ff33",
+                // backgroundColor: "#4a00ff33",
                 // borderRadius: "3px",
                 // border: "1px solid rgb(26, 25, 43)",
               }}

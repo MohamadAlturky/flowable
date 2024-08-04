@@ -63,6 +63,7 @@ export default function BuildActivityNode(position, type, nodes, name, setNodes,
             fontWeight: "900",
             color: "white",
             backgroundColor: "rgb(123, 75, 242, 93)",
+            zIndex:300
         },
         extent: "parent",
         parentId: parent.id,

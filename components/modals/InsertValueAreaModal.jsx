@@ -51,7 +51,7 @@ export default function InsertValueAreaModal({ isOpen, setIsOpen, setValueName, 
           }
           else {
             setIsOpen(false)
-            setValue("")
+            // setValue("")
             setValueName(value)
           }
         }}>

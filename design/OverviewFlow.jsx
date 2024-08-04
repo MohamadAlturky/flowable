@@ -73,13 +73,14 @@ const nodeTypes = {
   swimlane: SwimlaneNode,
   activity: Activity,
   gateway: Gateway,
-  interevent: IntermediateEventNode,
-  endevent: EndEventNode,
-  startevent: StartEventNode
+  Intermediate_Event: IntermediateEventNode,
+  End_Event: EndEventNode,
+  Start_Event: StartEventNode
 };
 import InterEventBuilder from "../services/DragAndDrop/InterEventBuilder";
 import EndEventBuilder from "../services/DragAndDrop/EndEventBuilder";
 import StartEventBuilder from "../services/DragAndDrop/StartEventBuilder";
+import buildNodesAndEdges from "../services/builders/BuildDiagram";
 
 const edgeTypes = {
   button: ButtonEdge,
@@ -197,6 +198,81 @@ const OverviewFlow = () => {
   //       setIsGenerating(false)
   //     });
   // }
+
+  const generateWithGroq = () => {
+    if (process == "") {
+      toast({
+        title: "❌ Error!",
+        description: `fill the process description please`,
+      });
+      return;
+    }
+    setIsGenerating(true);
+    toast({
+      title: "Greate!",
+      description: `we are working on generating the diagram`,
+    });
+    const axiosInstance = axios.create();
+    const data = {
+      "process_description": process
+    }
+    axiosInstance.post(apiUrl.baseUrl + "/groq/generate", data)
+      .then(res => {
+
+        setNodes(res.data.nodes);
+        setEdges(() => res.data.edges)
+
+        toast({
+          title: "✅ Greate!",
+          description: `the report generated successfully.`,
+        });
+      }).catch(err => {
+        console.log(err)
+        toast({
+          title: "❌ Error!",
+          description: `error occured sorry!`,
+        });
+      }).finally(() => {
+        setIsGenerating(false)
+      });
+  }
+  const generateWithGroqCollaboration = () => {
+    if (process == "") {
+      toast({
+        title: "❌ Error!",
+        description: `fill the process description please`,
+      });
+      return;
+    }
+    setIsGenerating(true);
+    toast({
+      title: "Greate!",
+      description: `we are working on generating the diagram`,
+    });
+    const axiosInstance = axios.create();
+    const data = {
+      "process_description": process
+    }
+    axiosInstance.post(apiUrl.baseUrl + "/groq/generate_with_collaboration", data)
+      .then(res => {
+
+        setNodes(res.data.nodes);
+        setEdges(() => res.data.edges)
+
+        toast({
+          title: "✅ Greate!",
+          description: `the report generated successfully.`,
+        });
+      }).catch(err => {
+        console.log(err)
+        toast({
+          title: "❌ Error!",
+          description: `error occured sorry!`,
+        });
+      }).finally(() => {
+        setIsGenerating(false)
+      });
+  }
   const generate = () => {
     if (process == "") {
       toast({
@@ -214,30 +290,395 @@ const OverviewFlow = () => {
     const data = {
       "process_description": process
     }
-    axiosInstance.post(apiUrl.baseUrl + "/generate/direct_with_report", data)
-      .then(res => {
-        console.log(res.data.report);
-        setReport(res.data.report)
+    let res = {
+      "report": {
+        "gateways_report": {
+          "content": [
+            {
+              "name": "Exclusive Gateway (XOR Gate)",
+              "type": "Exclusive",
+              "description": "User selects between multiple options for a free reward after selecting items to purchase",
+              "inputs": [
+                {
+                  "name": "User has selected items",
+                  "description": "User has selected the items they want to purchase"
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "Free reward is selected and awarded",
+                  "description": "The user selects a free reward and it is awarded"
+                },
+                {
+                  "name": "No free reward is selected (default path)",
+                  "description": "The user does not select a free reward, so the process continues with the default path"
+                }
+              ]
+            },
+            {
+              "name": "Parallel Gateway (AND Gate)",
+              "type": "Parallel",
+              "description": "User simultaneously selects items to purchase and sets a payment method",
+              "inputs": [
+                {
+                  "name": "User has started an order by logging in",
+                  "description": "The user logs in and starts the ordering process"
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "Items are selected",
+                  "description": "The user selects the items they want to purchase"
+                },
+                {
+                  "name": "Payment method is set",
+                  "description": "The user sets their payment method for the order"
+                }
+              ]
+            },
+            {
+              "name": "Inclusive Gateway (OR Gate)",
+              "type": "Inclusive",
+              "description": "User either pays or completes an installment agreement after setting a payment method",
+              "inputs": [
+                {
+                  "name": "User has set a payment method",
+                  "description": "The user has set their payment method for the order"
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "Payment is completed",
+                  "description": "The user pays for the order and it is completed"
+                },
+                {
+                  "name": "Installment agreement is completed",
+                  "description": "The user completes an installment agreement and the process continues"
+                }
+              ]
+            },
+            {
+              "name": "Inclusive Gateway (OR Gate) - Duplicate",
+              "type": "Inclusive",
+              "description": "User either pays or completes an installment agreement after setting a payment method (duplicate)",
+              "inputs": [
+                {
+                  "name": "User has set a payment method",
+                  "description": "The user has set their payment method for the order"
+                }
+              ],
+              "outputs": [
+                {
+                  "name": "Payment is completed",
+                  "description": "The user pays for the order and it is completed"
+                },
+                {
+                  "name": "Installment agreement is completed",
+                  "description": "The user completes an installment agreement and the process continues"
+                }
+              ]
+            }
+          ]
+        },
+        "tasks_report": {
+          "content": [
+            {
+              "name": "Login",
+              "type": "User Task",
+              "description": "User logs in to their account."
+            },
+            {
+              "name": "Select Items",
+              "type": "Service Task",
+              "description": "User selects items to purchase from the online shop."
+            },
+            {
+              "name": "Set Payment Method",
+              "type": "Service Task",
+              "description": "User sets a payment method for the purchase."
+            },
+            {
+              "name": "Pay or Installment Agreement",
+              "type": "User Task",
+              "description": "User chooses to either pay or complete an installment agreement."
+            },
+            {
+              "name": "Choose Reward Option",
+              "type": "Service Task",
+              "description": "User selects from multiple options for a free reward, independent of payment activities."
+            },
+            {
+              "name": "Deliver Items",
+              "type": "Service Task",
+              "description": "The items are delivered to the user."
+            },
+            {
+              "name": "Return Items for Exchange",
+              "type": "User Task",
+              "description": "User has the right to return items and receive a new delivery."
+            },
+            {
+              "name": "New Delivery",
+              "type": "Service Task",
+              "description": "A new delivery is made after item returns."
+            }
+          ]
+        },
+        "poolsLanes_report": {
+          "content": [
+            {
+              "name": "User (Customer)",
+              "description": "Pool for user customer",
+              "lanes": [
+                {
+                  "name": "Order Management",
+                  "description": "Lane for managing orders"
+                },
+                {
+                  "name": "Reward Program",
+                  "description": "Lane for reward program independent of payment activities"
+                }
+              ]
+            },
+            {
+              "name": "Online Shop (Vendor)",
+              "description": "Pool for online shop vendor",
+              "lanes": [
+                {
+                  "name": "Order Fulfillment",
+                  "description": "Lane for fulfilling orders"
+                }
+              ]
+            }
+          ]
+        },
+        "events_report": {
+          "content": [
+            {
+              "name": "User Logs In",
+              "type": "Start Event",
+              "description": "The user initiates the order by logging into their account, marking the beginning of the process."
+            },
+            {
+              "name": "Order Placed",
+              "type": "Intermediate Event",
+              "description": "The user has selected items to purchase and set a payment method, marking a specific moment in the process."
+            },
+            {
+              "name": "Payment Received/Installment Agreement Completed",
+              "type": "Intermediate Event",
+              "description": "The user completes either the payment or an installment agreement, indicating progress in the process."
+            },
+            {
+              "name": "Reward Option Selected",
+              "type": "Intermediate Event",
+              "description": "The user chooses between multiple options for a free reward, marking another specific moment in the process."
+            },
+            {
+              "name": "Items Delivered",
+              "type": "Intermediate Event",
+              "description": "The items are delivered to the user, indicating completion of one stage in the process."
+            },
+            {
+              "name": "Return Requested/Exchange",
+              "type": "Intermediate Event",
+              "description": "The user requests a return or exchange of items, marking another specific moment in the process."
+            },
+            {
+              "name": "Delivery Made",
+              "type": "End Event",
+              "description": "A new delivery is made every time items are returned, indicating completion of the final stage in the process."
+            }
+          ]
+        }
+      },
+      "connections": [
+        {
+          "source_name": "User Logs In (Start Event)",
+          "source_type": "Start Event",
+          "destination_name": "Login (User Task)",
+          "destination_type": "User Task"
+        },
+        {
+          "source_name": "Login (User Task)",
+          "source_type": "User Task",
+          "destination_name": "Select Items (Service Task)",
+          "destination_type": "Service Task"
+        },
+        {
+          "source_name": "Select Items (Service Task)",
+          "source_type": "Service Task",
+          "destination_name": "Choose Reward Option (Service Task)",
+          "destination_type": "Service Task"
+        },
+        {
+          "source_name": "Select Items (Service Task)",
+          "source_type": "Service Task",
+          "destination_name": "Set Payment Method (Service Task)",
+          "destination_type": "Service Task"
+        },
+        {
+          "source_name": "Choose Reward Option (Service Task)",
+          "source_type": "Service Task",
+          "destination_name": "Pay or Installment Agreement (User Task)",
+          "destination_type": "User Task"
+        },
+        {
+          "source_name": "Set Payment Method (Service Task)",
+          "source_type": "Service Task",
+          "destination_name": "Pay or Installment Agreement (User Task)",
+          "destination_type": "User Task"
+        },
+        {
+          "source_name": "Pay or Installment Agreement (User Task)",
+          "source_type": "User Task",
+          "destination_name": "Order Placed (Intermediate Event)",
+          "destination_type": "Intermediate Event"
+        },
+        {
+          "source_name": "Pay or Installment Agreement (User Task)",
+          "source_type": "User Task",
+          "destination_name": "Payment Received/Installment Agreement Completed (Intermediate Event)",
+          "destination_type": "Intermediate Event"
+        },
+        {
+          "source_name": "Order Placed (Intermediate Event)",
+          "source_type": "Intermediate Event",
+          "destination_name": "Items Delivered (Intermediate Event)",
+          "destination_type": "Intermediate Event"
+        },
+        {
+          "source_name": "Pay or Installment Agreement (User Task)",
+          "source_type": "User Task",
+          "destination_name": "Items Delivered (Intermediate Event)",
+          "destination_type": "Intermediate Event"
+        },
+        {
+          "source_name": "Payment Received/Installment Agreement Completed (Intermediate Event)",
+          "source_type": "Intermediate Event",
+          "destination_name": "Items Delivered (Intermediate Event)",
+          "destination_type": "Intermediate Event"
+        },
+        {
+          "source_name": "Return Requested/Exchange (Intermediate Event)",
+          "source_type": "Intermediate Event",
+          "destination_name": "New Delivery (Service Task)",
+          "destination_type": "Service Task"
+        },
+        {
+          "source_name": "New Delivery (Service Task)",
+          "source_type": "Service Task",
+          "destination_name": "Delivery Made (End Event)",
+          "destination_type": "End Event"
+        }
+      ],
+      "annotations": [
+        {
+          "components_name": "User Logs In",
+          "participant_name": "User (Customer)"
+        },
+        {
+          "components_name": "Login",
+          "participant_name": "User (Customer)"
+        },
+        {
+          "components_name": "Select Items",
+          "participant_name": "User (Customer)"
+        },
+        {
+          "components_name": "Set Payment Method",
+          "participant_name": "User (Customer)"
+        },
+        {
+          "components_name": "Pay or Installment Agreement",
+          "participant_name": "User (Customer)"
+        },
+        {
+          "components_name": "Choose Reward Option",
+          "participant_name": "User (Customer)"
+        },
+        {
+          "components_name": "Return Requested/Exchange",
+          "participant_name": "User (Customer)"
+        },
+        {
+          "components_name": "Order Placed",
+          "participant_name": "Order Management"
+        },
+        {
+          "components_name": "New Delivery",
+          "participant_name": "Order Fulfillment"
+        },
+        {
+          "components_name": "Items Delivered",
+          "participant_name": "Order Fulfillment"
+        },
+        {
+          "components_name": "Payment Received/Installment Agreement Completed",
+          "participant_name": "Order Management"
+        },
+        {
+          "components_name": "Delivery Made",
+          "participant_name": "Online Shop (Vendor)"
+        }
+      ]
+    }
+    setReport(res.report)
+    const data2 = {
+      annotations: res.annotations,
+      connections: res.connections
+    }
+    console.log(data2);
 
-        console.log("res.data.connections");
-        console.log(res.data.connections);
-        console.log("res.data.annotations");
-        console.log(res.data.annotations);
+    const result = buildNodesAndEdges(data2, res.report.poolsLanes_report.content, setNodes, getId)
+    setNodes(result.arr);
+    setEdges(() => result.connections)
 
-        toast({
-          title: "✅ Greate!",
-          description: `the report generated successfully.`,
-        });
-      }).catch(err => {
-        console.log(err)
-        console.log(err.toJSON())
-        toast({
-          title: "❌ Error!",
-          description: `error occured sorry!`,
-        });
-      }).finally(() => {
-        setIsGenerating(false)
-      });
+    toast({
+      title: "✅ Greate!",
+      description: `the report generated successfully.`,
+    });
+    setIsGenerating(false)
+    // axiosInstance.post(apiUrl.baseUrl + "/generate/direct_with_report", data)
+    //   .then(res => {
+    //     console.log("res.data");
+    //     console.log("res.data");
+    //     console.log("res.data");
+    //     console.log("res.data");
+    //     console.log("res.data");
+    //     console.log("res.data");
+    //     console.log("res.data");
+    //     console.log(res.data);
+    //     setReport(res.data.report)
+    //     const data = {
+    //       annotations:res.data.annotations,
+    //       connections:res.data.connections
+    //     }
+    //     console.log(data);
+
+    //     // console.log("res.data.connections");
+    //     // console.log(res.data.connections);
+    //     // console.log("res.data.annotations");
+    //     // console.log(res.data.annotations);
+    //     const result = buildNodesAndEdges(data)
+    //     console.log(result);
+    //     setNodes(result.arr);
+    //     setEdges(() => result.connections)
+
+    //     toast({
+    //       title: "✅ Greate!",
+    //       description: `the report generated successfully.`,
+    //     });
+    //   }).catch(err => {
+    //     console.log(err)
+    //     // console.log(err.toJSON())
+    //     toast({
+    //       title: "❌ Error!",
+    //       description: `error occured sorry!`,
+    //     });
+    //   }).finally(() => {
+    //     setIsGenerating(false)
+    //   });
   }
   /////
   const onNodeDoubleClick = async (_, node) => {
@@ -344,7 +785,7 @@ const OverviewFlow = () => {
                         Process Description
                         <ContextMenuShortcut>⌘</ContextMenuShortcut>
                       </ContextMenuItem>
-                          <ContextMenuSeparator />
+                      <ContextMenuSeparator />
 
                       <ContextMenuItem inset
 
@@ -356,6 +797,24 @@ const OverviewFlow = () => {
                         <ContextMenuShortcut>⌘</ContextMenuShortcut>
                       </ContextMenuItem>
 
+                      <ContextMenuItem inset
+
+                        onClick={(e) => {
+                          generateWithGroq()
+                        }}
+                      >
+                        Generate with Groq
+                        <ContextMenuShortcut>⌘</ContextMenuShortcut>
+                      </ContextMenuItem>
+                      <ContextMenuItem inset
+
+                        onClick={(e) => {
+                          generateWithGroqCollaboration()
+                        }}
+                        >
+                          Generate with Collaboration
+                        <ContextMenuShortcut>⌘</ContextMenuShortcut>
+                        </ContextMenuItem>
                       <ContextMenuSub>
                         <ContextMenuSubTrigger inset>Reports</ContextMenuSubTrigger>
                         <ContextMenuSubContent className="w-48">
@@ -415,7 +874,7 @@ const OverviewFlow = () => {
                           </ContextMenuItem>
                           {/* <ContextMenuSeparator />/ */}
                           {/* <ContextMenuItem  onClick={() => { */}
-                            {/* generateDiagram() */}
+                          {/* generateDiagram() */}
                           {/* }}>Diagram Merge Tools</ContextMenuItem> */}
                         </ContextMenuSubContent>
                       </ContextMenuSub>
@@ -548,10 +1007,10 @@ const OverviewFlow = () => {
               />)}
               {report && (
                 <>
-                  <ReportModal isOpen={reportModalOpen} setIsOpen={setReportModalOpen} title={"Events Report"} supTitle={"this report is generated by AI."} report={report.events_report.content} />
-                  <ReportModal isOpen={tasksReportModalOpen} setIsOpen={setTasksReportModalOpen} title={"Tasks Report"} supTitle={"this report is generated by AI."} report={report.tasks_report.content} />
-                  <GatewaysReportModal isOpen={gatewaysReportModalOpen} setIsOpen={setGatewaysReportModalOpen} title={"Gateways Report"} supTitle={"this report is generated by AI."} report={report.gateways_report.content} />
-                  <PoolsReportModal isOpen={poolsReportModalOpen} setIsOpen={setPoolsReportModalOpen} title={"Pools And Lanes Report"} supTitle={"this report is generated by AI."} report={report.poolsLanes_report.content} />
+                  {reportModalOpen && <ReportModal isOpen={reportModalOpen} setIsOpen={setReportModalOpen} title={"Events Report"} supTitle={"this report is generated by AI."} report={report.events_report.content} />}
+                  {tasksReportModalOpen && <ReportModal isOpen={tasksReportModalOpen} setIsOpen={setTasksReportModalOpen} title={"Tasks Report"} supTitle={"this report is generated by AI."} report={report.tasks_report.content} />}
+                  {gatewaysReportModalOpen && <GatewaysReportModal isOpen={gatewaysReportModalOpen} setIsOpen={setGatewaysReportModalOpen} title={"Gateways Report"} supTitle={"this report is generated by AI."} report={report.gateways_report.content} />}
+                  {poolsReportModalOpen && <PoolsReportModal isOpen={poolsReportModalOpen} setIsOpen={setPoolsReportModalOpen} title={"Pools And Lanes Report"} supTitle={"this report is generated by AI."} report={report.poolsLanes_report.content} />}
                   {/* <PoolsReportModal isOpen={poolsReportModalOpen} setIsOpen={setPoolsReportModalOpen} title={"Pools And Lanes Report"} supTitle={"this report is generated by AI."} report={(report.poolsLanes_report.content.pools!= undefined)?report.poolsLanes_report.content.pools:report.poolsLanes_report.content} /> */}
                 </>
               )}

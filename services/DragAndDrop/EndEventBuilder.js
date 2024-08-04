@@ -63,7 +63,8 @@ export default function EndEventBuilder(position, type, nodes, name, setNodes, g
             border: '4px solid #1a192b',
             display: "flex",
             justifyContent: "center",
-            alignItems: "center"
+            alignItems: "center",
+            zIndex:300
         },
         extent: "parent",
         parentId: parent.id,

@@ -2,6 +2,7 @@ import React from "react";
 import { MarkerType } from "@xyflow/react";
 
 export const nodes = [
+  // {'id': 'startOrder', 'type': 'StartEvent', 'data': {'label': 'Start Event'}, 'position': {'x': 0, 'y': 0}}, {'id': 'selectItemsAndPaymentMethod', 'type': 'Gateway', 'data': {'label': 'Parallel Gateway'}, 'position': {'x': 250, 'y': 0}}, {'id': 'selectItems', 'type': 'Task', 'data': {'label': 'Select Items'}, 'position': {'x': 500, 'y': 0}}, {'id': 'setPaymentMethod', 'type': 'Task', 'data': {'label': 'Set Payment Method'}, 'position': {'x': 750, 'y': 0}}, {'id': 'chooseReward', 'type': 'Task', 'data': {'label': 'Choose Reward'}, 'position': {'x': 1000, 'y': 0}}, {'id': 'paymentOptions', 'type': 'Gateway', 'data': {'label': 'Exclusive Gateway'}, 'position': {'x': 0, 'y': 150}}, {'id': 'pay', 'type': 'Task', 'data': {'label': 'Pay'}, 'position': {'x': 250, 'y': 150}}, {'id': 'installmentAgreement', 'type': 'Task', 'data': {'label': 'Installment Agreement'}, 'position': {'x': 500, 'y': 150}}, {'id': 'deliverItems', 'type': 'Task', 'data': {'label': 'Deliver Items'}, 'position': {'x': 750, 'y': 150}}, {'id': 'returnItems', 'type': 'IntermediateCatchEvent', 'data': {'label': 'Return Items'}, 'position': {'x': 1000, 'y': 150}}, {'id': 'orderComplete', 'type': 'EndEvent', 'data': {'label': 'End Event'}, 'position': {'x': 0, 'y': 300}}
   // {
   //   id: "annotation-1",
   //   type: "annotation",
@@ -134,6 +135,7 @@ export const nodes = [
 ];
 
 export const edges = [
+  // {'id': 'startOrder_selectItemsAndPaymentMethod', 'source': 'startOrder', 'target': 'selectItemsAndPaymentMethod'}, {'id': 'selectItemsAndPaymentMethod_selectItems', 'source': 'selectItemsAndPaymentMethod', 'target': 'selectItems'}, {'id': 'selectItemsAndPaymentMethod_setPaymentMethod', 'source': 'selectItemsAndPaymentMethod', 'target': 'setPaymentMethod'}, {'id': 'selectItems_chooseReward', 'source': 'selectItems', 'target': 'chooseReward'}, {'id': 'setPaymentMethod_paymentOptions', 'source': 'setPaymentMethod', 'target': 'paymentOptions'}, {'id': 'selectItemsAndPaymentMethod_paymentOptions', 'source': 'selectItemsAndPaymentMethod', 'target': 'paymentOptions'}, {'id': 'paymentOptions_pay', 'source': 'paymentOptions', 'target': 'pay'}, {'id': 'paymentOptions_installmentAgreement', 'source': 'paymentOptions', 'target': 'installmentAgreement'}, {'id': 'pay_deliverItems', 'source': 'pay', 'target': 'deliverItems'}, {'id': 'deliverItems_returnItems', 'source': 'deliverItems', 'target': 'returnItems'}, {'id': 'returnItems_deliverItems', 'source': 'returnItems', 'target': 'deliverItems'}, {'id': 'deliverItems_orderComplete', 'source': 'deliverItems', 'target': 'orderComplete'}, {'id': 'installmentAgreement_deliverItems', 'source': 'installmentAgreement', 'target': 'deliverItems'}
   // {
   //   id: 'e1-2',
   //   source: '1-1',
