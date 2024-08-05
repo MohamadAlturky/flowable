@@ -41,6 +41,7 @@
     "react-hook-form": "^7.52.1",
     "react-resizable-panels": "^2.0.22",
     "react-spinners": "^0.14.1",
+    "sweetalert2": "^11.12.4",
     "tailwind-merge": "^2.4.0",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.1",

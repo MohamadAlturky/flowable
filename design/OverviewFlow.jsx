@@ -787,7 +787,7 @@ const OverviewFlow = () => {
                       </ContextMenuItem>
                       <ContextMenuSeparator />
 
-                      <ContextMenuItem inset
+                      {/* <ContextMenuItem inset
 
                         onClick={(e) => {
                           generate()
@@ -795,7 +795,7 @@ const OverviewFlow = () => {
                       >
                         Generate Diagram
                         <ContextMenuShortcut>⌘</ContextMenuShortcut>
-                      </ContextMenuItem>
+                      </ContextMenuItem> */}
 
                       <ContextMenuItem inset
 
