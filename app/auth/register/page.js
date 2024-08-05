@@ -6,15 +6,14 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast";
 import apiUrl from "../../../configurations/apiConfiguration.json";
 import { useRouter } from 'next/navigation'
+import Swal from 'sweetalert2'
 
 export default function RegisterForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const { toast } = useToast();
   const router = useRouter()
 
   // Validate email format
@@ -57,57 +56,141 @@ export default function RegisterForm() {
     e.preventDefault();
     // Validate email
     if (!validateEmail(email)) {
-      toast({
-        title: "❌ Error!",
-        description: `Please enter a valid email address.`,
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        width:"450px",
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.onmouseenter = Swal.stopTimer;
+          toast.onmouseleave = Swal.resumeTimer;
+        }
+      });
+      Toast.fire({
+        icon: "error",
+        title: "Please enter a valid email address."
       });
       return;
     }
     // Validate password length
     if (!validatePasswordLength(password)) {
-      toast({
-        title: "❌ Error!",
-        description: 'Password must be more than 8 characters long.'
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        width:"550px",
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.onmouseenter = Swal.stopTimer;
+          toast.onmouseleave = Swal.resumeTimer;
+        }
+      });
+      Toast.fire({
+        icon: "error",
+        title: "Password must be more than 8 characters long."
       });
       return;
     }
     // Validate at least one lowercase letter
     if (!validateLowercase(password)) {
-      toast({
-        title: "❌ Error!",
-        description: 'Password must contain at least one lowercase letter.'
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        width:"600px",
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.onmouseenter = Swal.stopTimer;
+          toast.onmouseleave = Swal.resumeTimer;
+        }
+      });
+      Toast.fire({
+        icon: "error",
+        title: 'Password must contain at least one lowercase letter.'
       });
       return;
     }
     // Validate at least one uppercase letter
     if (!validateUppercase(password)) {
-      toast({
-        title: "❌ Error!",
-        description: 'Password must contain at least one uppercase letter.'
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        width:"600px",
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.onmouseenter = Swal.stopTimer;
+          toast.onmouseleave = Swal.resumeTimer;
+        }
+      });
+      Toast.fire({
+        icon: "error",
+        title: "Password must contain at least one uppercase letter."
       });
 
       return;
     }
     // Validate at least one number
     if (!validateNumber(password)) {
-      toast({
-        title: "❌ Error!",
-        description: 'Password must contain at least one number.'
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        width:"550px",
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.onmouseenter = Swal.stopTimer;
+          toast.onmouseleave = Swal.resumeTimer;
+        }
+      });
+      Toast.fire({
+        icon: "error",
+        title: "Password must contain at least one number."
       });
       return;
     }
     // Validate at least one special character
     if (!validateSpecialChar(password)) {
-      toast({
-        title: "❌ Error!",
-        description: 'Password must contain at least one special character.'
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        width:"600px",
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.onmouseenter = Swal.stopTimer;
+          toast.onmouseleave = Swal.resumeTimer;
+        }
+      });
+      Toast.fire({
+        icon: "error",
+        title: "Password must contain at least one special character."
       });
       return;
     }
     if (confirmPassword != password) {
-      toast({
-        title: "❌ Error!",
-        description: 'the password does\'nt match the confirm password'
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        width:"450px",
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.onmouseenter = Swal.stopTimer;
+          toast.onmouseleave = Swal.resumeTimer;
+        }
+      });
+      Toast.fire({
+        icon: "error",
+        title: "the password does\'nt match the confirm password"
       });
       return;
     }
@@ -119,9 +202,21 @@ export default function RegisterForm() {
     axiosInstance.post(apiUrl.baseUrl + "/register", data)
       .then(res => {
         console.log(res.data);
-        toast({
-          title: "✅ Success!",
-          description: `the account created successfully, please login with your new account credentials`,
+        const Toast = Swal.mixin({
+          toast: true,
+          position: "top-end",
+          width:"800px",
+          showConfirmButton: false,
+          timer: 1500,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+          }
+        });
+        Toast.fire({
+          icon: "success",
+          title: "the account created successfully, please login with your new account credentials"
         });
         router.push('/auth/login')
       }).catch(err => {
@@ -132,9 +227,21 @@ export default function RegisterForm() {
         }catch(e){
           console.log(e);
         }
-        toast({
-          title: "❌ Error!",
-          description: error,
+        const Toast = Swal.mixin({
+          toast: true,
+          position: "top-end",
+          width:"600px",
+          showConfirmButton: false,
+          timer: 1500,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+          }
+        });
+        Toast.fire({
+          icon: "error",
+          title: error
         });
       });
   }

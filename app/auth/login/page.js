@@ -6,7 +6,6 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast";
 import apiUrl from "../../../configurations/apiConfiguration.json";
 import { useRouter } from 'next/navigation'
 import Swal from 'sweetalert2'
@@ -14,7 +13,6 @@ import Swal from 'sweetalert2'
 export default function Form() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { toast } = useToast();
   const router = useRouter()
   // Validate email format
   const validateEmail = (email) => {
@@ -53,9 +51,21 @@ export default function Form() {
     }
     // Validate password length
     if (!validatePasswordLength(password)) {
-      toast({
-        title: "❌ Error!",
-        description: 'please specify the password.'
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        width:"450px",
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.onmouseenter = Swal.stopTimer;
+          toast.onmouseleave = Swal.resumeTimer;
+        }
+      });
+      Toast.fire({
+        icon: "error",
+        title: "please specify the password."
       });
       return;
     }
@@ -91,9 +101,21 @@ export default function Form() {
       }).catch(err => {
         console.log(err)
         let error = `email or password isn't correct`
-        toast({
-          title: "❌ Error!",
-          description: error,
+        const Toast = Swal.mixin({
+          toast: true,
+          position: "top-end",
+          width:"450px",
+          showConfirmButton: false,
+          timer: 1500,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+          }
+        });
+        Toast.fire({
+          icon: "error",
+          title:  error
         });
       });
   }
