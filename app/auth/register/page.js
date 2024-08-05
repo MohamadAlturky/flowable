@@ -1,6 +1,6 @@
 "use client"
 import axios from 'axios';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,28 @@ export default function RegisterForm() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const router = useRouter()
-
+  useEffect(()=>{
+    const Toast = Swal.mixin({
+      toast: true,
+      position: "top-end",
+      width:"650px",
+      showConfirmButton: false,
+      timer: 5000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.onmouseenter = Swal.stopTimer;
+        toast.onmouseleave = Swal.resumeTimer;
+      }
+    });
+    Toast.fire({
+      title: `Password Requirements:
+          📌 Must include at least one lowercase letter (a-z)
+          📌 Must include at least one uppercase letter (A-Z)
+          📌 Must include at least one numeric digit (0-9)
+          📌 Must include at least one special character (e.g., !@#$%^&*)
+          📌 Must be longer than 8 characters`
+    });
+  },[])
   // Validate email format
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
