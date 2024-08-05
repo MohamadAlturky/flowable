@@ -9,8 +9,11 @@ import { Label } from "@/components/ui/label";
 import apiUrl from "../../../configurations/apiConfiguration.json";
 import { useRouter } from 'next/navigation'
 import Swal from 'sweetalert2'
+import {setAuthTokens,getAuthTokens} from "../../../services/auth/AuthServices"
 
 export default function Form() {
+  // const cookieStore = useCookies();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter()
@@ -77,7 +80,12 @@ export default function Form() {
     }
     axiosInstance.post(apiUrl.baseUrl + "/login", data)
       .then(res => {
-        console.log(res.data);
+        // console.log(res.data);
+        
+        setAuthTokens(res.data)
+        console.log(getAuthTokens());
+        
+
         const Toast = Swal.mixin({
           toast: true,
           position: "top-end",

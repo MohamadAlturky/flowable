@@ -179,7 +179,7 @@ export default function RegisterForm() {
       const Toast = Swal.mixin({
         toast: true,
         position: "top-end",
-        width:"450px",
+        width:"650px",
         showConfirmButton: false,
         timer: 1500,
         timerProgressBar: true,
