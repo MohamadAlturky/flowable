@@ -143,7 +143,7 @@ export default function Landing({children}) {
               Dashboard
             </Link>
             <Link href="/projects">Projects</Link>
-            <Link href="#">Integrations</Link>
+            <Link href="/invitations">Invitations</Link>
             <Link href="#">Support</Link>
             <Link href="#">Organizations</Link>
             <Link href="#">Advanced</Link>

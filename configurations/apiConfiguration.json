@@ -1,3 +1,4 @@
 {
-    "baseUrl": "http://172.29.3.110:8098"
+    "baseUrl": "http://172.29.3.110:8098",
+    "projectsUrl": "http://172.29.3.110:8098/ProjectManagement"
 }

@@ -1,5 +1,21 @@
 "use client"
 import React, { useCallback, useRef } from 'react';
+
+import {
+    ContextMenu,
+    ContextMenuCheckboxItem,
+    ContextMenuContent,
+    ContextMenuItem,
+    ContextMenuLabel,
+    ContextMenuRadioGroup,
+    ContextMenuRadioItem,
+    ContextMenuSeparator,
+    ContextMenuShortcut,
+    ContextMenuSub,
+    ContextMenuSubContent,
+    ContextMenuSubTrigger,
+    ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import {
     ReactFlow,
     useNodesState,
@@ -64,7 +80,7 @@ const AddNodeOnEdgeDrop = () => {
 
                 setNodes((nds) => nds.concat(newNode));
                 setEdges((eds) =>
-                    eds.concat({ id, source: connectingNodeId.current, target: id,animated:true }),
+                    eds.concat({ id, source: connectingNodeId.current, target: id, animated: true }),
                 );
             }
         },
@@ -72,23 +88,76 @@ const AddNodeOnEdgeDrop = () => {
     );
 
     return (
-        <div className="wrapper" ref={reactFlowWrapper}>
-            <ReactFlow
-                nodes={nodes}
-                edges={edges}
-                onNodesChange={onNodesChange}
-                onEdgesChange={onEdgesChange}
-                onConnect={onConnect}
-                onConnectStart={onConnectStart}
-                onConnectEnd={onConnectEnd}
-                fitView
-                fitViewOptions={{ padding: 2 }}
-                nodeOrigin={[0.5, 0]}>
-                <MiniMap zoomable pannable/>
-                <Controls />
-                <Background variant='lines'/>
-            </ReactFlow>
-        </div>
+        <>
+            {/* <div style={{
+                // zIndex: 10
+            }}> */}
+            <ContextMenu>
+                <ContextMenuTrigger>
+                    <div className="wrapper" ref={reactFlowWrapper}>
+                        <ReactFlow
+                            nodes={nodes}
+                            edges={edges}
+                            onNodesChange={onNodesChange}
+                            onEdgesChange={onEdgesChange}
+                            onConnect={onConnect}
+                            onConnectStart={onConnectStart}
+                            onConnectEnd={onConnectEnd}
+                            fitView
+                            fitViewOptions={{ padding: 2 }}
+                            nodeOrigin={[0.5, 0]}>
+                            <MiniMap zoomable pannable />
+                            <Controls />
+                            <Background variant='lines' />
+                        </ReactFlow>
+                    </div>
+
+                </ContextMenuTrigger>
+                <ContextMenuContent className="z-10000 w-64">
+                    <ContextMenuItem inset>
+                        New Business Process
+                        <ContextMenuShortcut>⌘</ContextMenuShortcut>
+                    </ContextMenuItem>
+                    {/* <ContextMenuItem inset disabled>
+                        Forward
+                        <ContextMenuShortcut>⌘</ContextMenuShortcut>
+                    </ContextMenuItem>
+                    <ContextMenuItem inset>
+                        Reload
+                        <ContextMenuShortcut>⌘R</ContextMenuShortcut>
+                    </ContextMenuItem>
+                    <ContextMenuSub>
+                        <ContextMenuSubTrigger inset>More Tools</ContextMenuSubTrigger>
+                        <ContextMenuSubContent className="w-48">
+                            <ContextMenuItem>
+                                Save Page As...
+                                <ContextMenuShortcut>⇧⌘S</ContextMenuShortcut>
+                            </ContextMenuItem>
+                            <ContextMenuItem>Create Shortcut...</ContextMenuItem>
+                            <ContextMenuItem>Name Window...</ContextMenuItem>
+                            <ContextMenuSeparator />
+                            <ContextMenuItem>Developer Tools</ContextMenuItem>
+                        </ContextMenuSubContent>
+                    </ContextMenuSub>
+                    <ContextMenuSeparator />
+                    <ContextMenuCheckboxItem checked>
+                        Show Bookmarks Bar
+                        <ContextMenuShortcut>⌘⇧B</ContextMenuShortcut>
+                    </ContextMenuCheckboxItem>
+                    <ContextMenuCheckboxItem>Show Full URLs</ContextMenuCheckboxItem>
+                    <ContextMenuSeparator />
+                    <ContextMenuRadioGroup value="pedro">
+                        <ContextMenuLabel inset>People</ContextMenuLabel>
+                        <ContextMenuSeparator />
+                        <ContextMenuRadioItem value="pedro">
+                            Pedro Duarte
+                        </ContextMenuRadioItem>
+                        <ContextMenuRadioItem value="colm">Colm Tuite</ContextMenuRadioItem>
+                    </ContextMenuRadioGroup>*/}
+                </ContextMenuContent> 
+            </ContextMenu>
+            {/* </div> */}
+        </>
     );
 };
 

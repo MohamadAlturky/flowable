@@ -1,47 +1,28 @@
 "use client"
 import Link from 'next/link';
-import { BellIcon, CheckIcon } from "@radix-ui/react-icons"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
 import { axiosInstance } from "../../contexts/api"
 import { getAuthTokens } from "../../services/auth/AuthServices"
 import {
     Pagination,
     PaginationContent,
-    PaginationEllipsis,
     PaginationItem,
-    PaginationLink,
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination"
 import {
     Card,
-    CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import {
-    Collapsible,
-    CollapsibleContent,
-    CollapsibleTrigger,
-} from "@/components/ui/collapsible"
-import { Switch } from "@/components/ui/switch"
-const notifications = [
-    {
-        title: "ECommerce",
-    },
-    {
-        title: "Online Shop",
-    },
-]
+
 import { Skeleton } from "@/components/ui/skeleton"
 
 import Swal from 'sweetalert2'
 import React from "react"
 
-export default function Projects() {
+export default function Invitations() {
     const [loading, setLoading] = React.useState(true); 
 
     const handleGet = async () => {
@@ -114,9 +95,9 @@ export default function Projects() {
                 <div className="grid gap-6">
                     <Card x-chunk="dashboard-04-chunk-1">
                         <CardHeader>
-                            <CardTitle>Projects</CardTitle>
+                            <CardTitle>Invitations</CardTitle>
                             <CardDescription>
-                                this is the projects that you are working on.
+                                this is the Invitations that you are involved in..
                             </CardDescription>
                         </CardHeader>
                     </Card>

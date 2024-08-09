@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 80",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -53,6 +53,9 @@
     "react-dom": "^18",
     "react-hook-form": "^7.52.1",
     "react-resizable-panels": "^2.0.22",
+    "react-search-box": "^3.0.0",
+    "react-select": "^5.8.0",
+    "react-select-search": "^4.1.7",
     "react-spinners": "^0.14.1",
     "sweetalert2": "^11.12.4",
     "tailwind-merge": "^2.4.0",

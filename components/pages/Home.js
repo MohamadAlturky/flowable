@@ -12,7 +12,7 @@ import {
 
 import React from "react"
 
-import InsertValueModal from "@/components/modals/InsertValueModalNew"
+import CreateProjectModal from "@/components/modals/CreateProjectModal"
 
 export default function Home() {
     const [createProject, setCreateProject] = React.useState(false)
@@ -52,17 +52,9 @@ export default function Home() {
                     </CardContent>
 
                 </Card>
-                <InsertValueModal
-                    placeholder={"write here.."}
+                <CreateProjectModal
                     isOpen={createProject}
                     setIsOpen={setCreateProject}
-                    label={"Create"}
-                    supTitle={"write the name of the new project."}
-                    title={"Project Name"}
-                    errorMessage={"can't create a project without name"}
-                    setValueName={async (v) => {
-
-                    }}
                 />
             </div>
 
