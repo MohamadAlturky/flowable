@@ -1,6 +1,6 @@
 "use client";
 import { PuffLoader } from "react-spinners";
-
+import {buildTree,calculateDimensions,adjustNodesPositions,addIdToNodes,addIdToTransitions,flattenTree,updateParentIds} from '../services/adjustment/adjust';
 import {
   ContextMenu,
   ContextMenuCheckboxItem,
@@ -214,13 +214,36 @@ const OverviewFlow = () => {
     });
     const axiosInstance = axios.create();
     const data = {
-      "process_description": process
+      "process_description": process,
+      "notes":"",
+      "report":""
     }
-    axiosInstance.post(apiUrl.baseUrl + "/groq/generate", data)
+    axiosInstance.post(apiUrl.aiUrl + "/generate/bpmn", data)
       .then(res => {
-
-        setNodes(res.data.nodes);
-        setEdges(() => res.data.edges)
+        console.log("res.data.nodes");
+        console.log("-------------------------------------------------");
+        // console.log(res.data.nodes);
+        // console.log(res.data.edges);
+        let newNodes = addIdToNodes(res.data.nodes)
+        // console.log(newNodes);
+        let newEdges =  addIdToTransitions(res.data.edges)
+        // console.log(newEdges);
+        newNodes = updateParentIds(newNodes,newEdges)
+        let tree = buildTree(newNodes)
+        // console.log(tree);
+        tree.forEach(rootNode => calculateDimensions(rootNode));
+        console.log(tree);
+        tree = adjustNodesPositions(tree)
+        let lastNodes = []
+        
+        tree.forEach(rootNode => lastNodes.push(...flattenTree(rootNode)));
+        console.log(tree);
+        // console.log(updateParentIds(newNodes,newEdges))
+        // console.log(flattenAggregatedNodes(aggregateNodes(res.data.nodes,adjustNodes)));
+        console.log(lastNodes);
+        
+        setNodes(lastNodes);
+        setEdges(() =>newEdges)
 
         toast({
           title: "✅ Greate!",
@@ -251,9 +274,11 @@ const OverviewFlow = () => {
     });
     const axiosInstance = axios.create();
     const data = {
-      "process_description": process
+      "process_description": process,
+      "notes":"",
+      "report":""
     }
-    axiosInstance.post(apiUrl.baseUrl + "/groq/generate_with_collaboration", data)
+    axiosInstance.post(apiUrl.baseUrl + "/generate/bpmn", data)
       .then(res => {
 
         setNodes(res.data.nodes);
@@ -628,7 +653,7 @@ const OverviewFlow = () => {
       annotations: res.annotations,
       connections: res.connections
     }
-    console.log(data2);
+    // console.log(data2);
 
     const result = buildNodesAndEdges(data2, res.report.poolsLanes_report.content, setNodes, getId)
     setNodes(result.arr);
