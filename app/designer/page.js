@@ -1,8 +1,8 @@
 'use client'
 import '@xyflow/react/dist/style.css';
-import OverviewFlow from "../../design/OverviewFlow"
+import MainDesigner from "../../design/MainDesigner"
 export default function Projects() {
   return (
-      <OverviewFlow />
+      <MainDesigner />
   );
 }

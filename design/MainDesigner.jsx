@@ -151,7 +151,7 @@ const nodeClassName = (node) => node.type;
 import MainSidebar from "./MainSidebar";
 import apiUrl from "../configurations/apiConfiguration.json";
 
-const OverviewFlow = () => {
+const MainDesigner = () => {
   const { toast } = useToast();
   const [process, setProcess] = useState("");
   const [poolModalOpen, setPoolModalOpen] = useState(false);
@@ -1046,4 +1046,4 @@ const OverviewFlow = () => {
   );
 };
 
-export default OverviewFlow;
+export default MainDesigner;
