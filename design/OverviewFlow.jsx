@@ -1,6 +1,6 @@
 "use client";
 import { PuffLoader } from "react-spinners";
-import {buildTree,calculateDimensions,adjustNodesPositions,addIdToNodes,addIdToTransitions,flattenTree,updateParentIds} from '../services/adjustment/adjust';
+import { buildTree, calculateDimensions, adjustNodesPositions, addIdToNodes, addIdToTransitions, flattenTree, updateParentIds, ADJUST } from '../services/adjustment/adjust';
 import {
   ContextMenu,
   ContextMenuCheckboxItem,
@@ -40,6 +40,7 @@ import {
   BackgroundVariant,
   useEdgesState,
   ReactFlowProvider,
+  Panel
 } from "@xyflow/react";
 
 import {
@@ -81,7 +82,7 @@ import InterEventBuilder from "../services/DragAndDrop/InterEventBuilder";
 import EndEventBuilder from "../services/DragAndDrop/EndEventBuilder";
 import StartEventBuilder from "../services/DragAndDrop/StartEventBuilder";
 import buildNodesAndEdges from "../services/builders/BuildDiagram";
-
+import { useLayoutEffect } from 'react'
 const edgeTypes = {
   button: ButtonEdge,
 };
@@ -89,6 +90,59 @@ const onDragOver = (event) => {
   event.preventDefault();
   event.dataTransfer.dropEffect = "move";
 };
+
+
+// 
+// 
+// 
+// 
+
+import ELK from 'elkjs/lib/elk.bundled.js';
+
+const elk = new ELK();
+
+const elkOptions = {
+  'elk.algorithm': 'layered',
+  'elk.layered.spacing.nodeNodeBetweenLayers': '200',
+  'elk.spacing.nodeNode': '400',
+};
+
+const getLayoutedElements = (nodes, edges, options = {}) => {
+  const isHorizontal = options?.['elk.direction'] === 'RIGHT';
+  const graph = {
+    id: 'root',
+    layoutOptions: options,
+    children: nodes.map((node) => ({
+      ...node,
+
+      targetPosition: isHorizontal ? 'left' : 'top',
+      sourcePosition: isHorizontal ? 'right' : 'bottom',
+
+      width: 50 + (node.data.label.length * 7),
+      height: 45,
+    })),
+    edges: edges,
+  };
+
+  return elk
+    .layout(graph)
+    .then((layoutedGraph) => ({
+      nodes: layoutedGraph.children.map((node) => ({
+        ...node,
+        // React Flow expects a position property on the node instead of `x`
+        // and `y` fields.
+        position: { x: node.x, y: node.y },
+      })),
+
+      edges: layoutedGraph.edges,
+    }))
+    .catch(console.error);
+};
+
+// 
+// 
+// 
+// 
 
 let id = 0;
 const getId = () => `${id++}`;
@@ -120,6 +174,35 @@ const OverviewFlow = () => {
     (params) => setEdges((eds) => addEdge({ ...params, animated: true }, eds)),
     []
   );
+  // 
+  // 
+  // 
+  const onLayout = useCallback(
+    ({ direction, useInitialNodes = false }) => {
+      const opts = { 'elk.direction': direction, ...elkOptions };
+      const ns = useInitialNodes ? initialNodes : nodes;
+      const es = useInitialNodes ? initialEdges : edges;
+
+      getLayoutedElements(ns, es, opts).then(
+        ({ nodes: layoutedNodes, edges: layoutedEdges }) => {
+          setNodes(layoutedNodes);
+          setEdges(layoutedEdges);
+
+          // window.requestAnimationFrame(() => fitView());
+        },
+      );
+    },
+    [nodes, edges],
+  );
+  useLayoutEffect(() => {
+    onLayout({ direction: 'DOWN', useInitialNodes: true });
+  }, []);
+
+  // 
+  // 
+  // 
+  // 
+  // 
 
   // D AND D
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -215,35 +298,61 @@ const OverviewFlow = () => {
     const axiosInstance = axios.create();
     const data = {
       "process_description": process,
-      "notes":"",
-      "report":""
+      "notes": "",
+      "report": ""
     }
     axiosInstance.post(apiUrl.aiUrl + "/generate/bpmn", data)
-      .then(res => {
+      .then(async (res) => {
         console.log("res.data.nodes");
         console.log("-------------------------------------------------");
         // console.log(res.data.nodes);
         // console.log(res.data.edges);
         let newNodes = addIdToNodes(res.data.nodes)
         // console.log(newNodes);
-        let newEdges =  addIdToTransitions(res.data.edges)
+        let newEdges = addIdToTransitions(res.data.edges)
         // console.log(newEdges);
-        newNodes = updateParentIds(newNodes,newEdges)
-        let tree = buildTree(newNodes)
+        newNodes = updateParentIds(newNodes, newEdges)
+        // // let tree = buildTree(newNodes)
+        // // // console.log(tree);
+        // // tree.forEach(rootNode => calculateDimensions(rootNode));
+        // // console.log(tree);
+        // // tree = adjustNodesPositions(tree)
+        // // let lastNodes = []
+
+        // // tree.forEach(rootNode => lastNodes.push(...flattenTree(rootNode)));
         // console.log(tree);
-        tree.forEach(rootNode => calculateDimensions(rootNode));
-        console.log(tree);
-        tree = adjustNodesPositions(tree)
-        let lastNodes = []
+        // // console.log(updateParentIds(newNodes,newEdges))
+        // // console.log(flattenAggregatedNodes(aggregateNodes(res.data.nodes,adjustNodes)));
+        // console.log(lastNodes);
+        const opts = { 'elk.direction': "RIGHT", ...elkOptions };
+        let layouted = await getLayoutedElements(newNodes, newEdges, opts)
+        let layoutedNodes = layouted.nodes
+        let pools = layoutedNodes.filter(e => e.type == "pool")
+        layoutedNodes = layoutedNodes.filter(e => e.type != "pool")
+        pools.forEach((e) => {
+          let x = e.style
+          e.width = 10000 
+          e.height = 1000 
+          e.style = {
+            ...x,
+            backgroundColor:"transparent",
+            width: 10000,
+            height: 1000
+          }
+        })
+        console.log(pools);
         
-        tree.forEach(rootNode => lastNodes.push(...flattenTree(rootNode)));
-        console.log(tree);
-        // console.log(updateParentIds(newNodes,newEdges))
-        // console.log(flattenAggregatedNodes(aggregateNodes(res.data.nodes,adjustNodes)));
-        console.log(lastNodes);
-        
-        setNodes(lastNodes);
-        setEdges(() =>newEdges)
+        let NlayoutedNodes = []
+        pools.forEach((e) => NlayoutedNodes.push(e))
+        let layoutedEdges = layouted.edges
+        layoutedNodes.forEach((e) =>e.position.x += 50)
+        layoutedNodes.forEach((e) => NlayoutedNodes.push(e))
+
+        console.log("layouted");
+        console.log(NlayoutedNodes);
+
+        setNodes(NlayoutedNodes);
+        setEdges(() => layoutedEdges)
 
         toast({
           title: "✅ Greate!",
@@ -275,8 +384,8 @@ const OverviewFlow = () => {
     const axiosInstance = axios.create();
     const data = {
       "process_description": process,
-      "notes":"",
-      "report":""
+      "notes": "",
+      "report": ""
     }
     axiosInstance.post(apiUrl.baseUrl + "/generate/bpmn", data)
       .then(res => {
@@ -517,136 +626,8 @@ const OverviewFlow = () => {
           ]
         }
       },
-      "connections": [
-        {
-          "source_name": "User Logs In (Start Event)",
-          "source_type": "Start Event",
-          "destination_name": "Login (User Task)",
-          "destination_type": "User Task"
-        },
-        {
-          "source_name": "Login (User Task)",
-          "source_type": "User Task",
-          "destination_name": "Select Items (Service Task)",
-          "destination_type": "Service Task"
-        },
-        {
-          "source_name": "Select Items (Service Task)",
-          "source_type": "Service Task",
-          "destination_name": "Choose Reward Option (Service Task)",
-          "destination_type": "Service Task"
-        },
-        {
-          "source_name": "Select Items (Service Task)",
-          "source_type": "Service Task",
-          "destination_name": "Set Payment Method (Service Task)",
-          "destination_type": "Service Task"
-        },
-        {
-          "source_name": "Choose Reward Option (Service Task)",
-          "source_type": "Service Task",
-          "destination_name": "Pay or Installment Agreement (User Task)",
-          "destination_type": "User Task"
-        },
-        {
-          "source_name": "Set Payment Method (Service Task)",
-          "source_type": "Service Task",
-          "destination_name": "Pay or Installment Agreement (User Task)",
-          "destination_type": "User Task"
-        },
-        {
-          "source_name": "Pay or Installment Agreement (User Task)",
-          "source_type": "User Task",
-          "destination_name": "Order Placed (Intermediate Event)",
-          "destination_type": "Intermediate Event"
-        },
-        {
-          "source_name": "Pay or Installment Agreement (User Task)",
-          "source_type": "User Task",
-          "destination_name": "Payment Received/Installment Agreement Completed (Intermediate Event)",
-          "destination_type": "Intermediate Event"
-        },
-        {
-          "source_name": "Order Placed (Intermediate Event)",
-          "source_type": "Intermediate Event",
-          "destination_name": "Items Delivered (Intermediate Event)",
-          "destination_type": "Intermediate Event"
-        },
-        {
-          "source_name": "Pay or Installment Agreement (User Task)",
-          "source_type": "User Task",
-          "destination_name": "Items Delivered (Intermediate Event)",
-          "destination_type": "Intermediate Event"
-        },
-        {
-          "source_name": "Payment Received/Installment Agreement Completed (Intermediate Event)",
-          "source_type": "Intermediate Event",
-          "destination_name": "Items Delivered (Intermediate Event)",
-          "destination_type": "Intermediate Event"
-        },
-        {
-          "source_name": "Return Requested/Exchange (Intermediate Event)",
-          "source_type": "Intermediate Event",
-          "destination_name": "New Delivery (Service Task)",
-          "destination_type": "Service Task"
-        },
-        {
-          "source_name": "New Delivery (Service Task)",
-          "source_type": "Service Task",
-          "destination_name": "Delivery Made (End Event)",
-          "destination_type": "End Event"
-        }
-      ],
-      "annotations": [
-        {
-          "components_name": "User Logs In",
-          "participant_name": "User (Customer)"
-        },
-        {
-          "components_name": "Login",
-          "participant_name": "User (Customer)"
-        },
-        {
-          "components_name": "Select Items",
-          "participant_name": "User (Customer)"
-        },
-        {
-          "components_name": "Set Payment Method",
-          "participant_name": "User (Customer)"
-        },
-        {
-          "components_name": "Pay or Installment Agreement",
-          "participant_name": "User (Customer)"
-        },
-        {
-          "components_name": "Choose Reward Option",
-          "participant_name": "User (Customer)"
-        },
-        {
-          "components_name": "Return Requested/Exchange",
-          "participant_name": "User (Customer)"
-        },
-        {
-          "components_name": "Order Placed",
-          "participant_name": "Order Management"
-        },
-        {
-          "components_name": "New Delivery",
-          "participant_name": "Order Fulfillment"
-        },
-        {
-          "components_name": "Items Delivered",
-          "participant_name": "Order Fulfillment"
-        },
-        {
-          "components_name": "Payment Received/Installment Agreement Completed",
-          "participant_name": "Order Management"
-        },
-        {
-          "components_name": "Delivery Made",
-          "participant_name": "Online Shop (Vendor)"
-        }
-      ]
+      "connections": [],
+      "annotations": []
     }
     setReport(res.report)
     const data2 = {
@@ -795,6 +776,24 @@ const OverviewFlow = () => {
                       </ControlButton>
                     </Controls>
                     <Background variant={BackgroundVariant.Dots} />
+                    <Panel position="top-right">
+                      <button onClick={() => onLayout({ direction: 'DOWN' })}>
+                        vertical layout
+                      </button>
+                      <button onClick={async () => {
+                        console.log(nodes);
+                        console.log(edges);
+
+                        let result = await ADJUST(nodes, edges)
+                        setNodes(result.nodes);
+                        setEdges(() => result.edges)
+                      }}>
+                        ADJUST
+                      </button>
+                      <button onClick={() => onLayout({ direction: 'RIGHT' })}>
+                        horizontal layout
+                      </button>
+                    </Panel>
                   </ReactFlow>
                 </ContextMenuTrigger>
 
@@ -836,10 +835,10 @@ const OverviewFlow = () => {
                         onClick={(e) => {
                           generateWithGroqCollaboration()
                         }}
-                        >
-                          Generate with Collaboration
+                      >
+                        Generate with Collaboration
                         <ContextMenuShortcut>⌘</ContextMenuShortcut>
-                        </ContextMenuItem>
+                      </ContextMenuItem>
                       <ContextMenuSub>
                         <ContextMenuSubTrigger inset>Reports</ContextMenuSubTrigger>
                         <ContextMenuSubContent className="w-48">
