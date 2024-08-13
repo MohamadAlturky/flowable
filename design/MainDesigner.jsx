@@ -57,10 +57,13 @@ import IntermediateEventNode from "./IntermediateEventNode";
 import StartEventNode from "./StartEventNode";
 import AND from "./AND";
 import OR from "./OR";
+import ManualTask from "./ManualTask";
+import ServiceTask from "./ServiceTask";
+import UserTask from "./UserTask";
 import XOR from "./XOR";
 import EndEventNode from "./EndEventNode";
 import ButtonEdge from "./ButtonEdge";
-import Activity from "./Activity";
+import Activity from "./ManualTask";
 import Gateway from "./Gateway";
 import InsertValueModal from "../components/modals/InsertValueModal";
 import ReportModal from "../components/modals/ReportModal";
@@ -82,7 +85,10 @@ const nodeTypes = {
   Start_Event: StartEventNode,
   OR:OR,
   XOR:XOR,
-  AND:AND
+  AND:AND,
+  UserTask:UserTask,
+  ServiceTask:ServiceTask,
+  ManualTask:ManualTask
 };
 import InterEventBuilder from "../services/DragAndDrop/InterEventBuilder";
 import EndEventBuilder from "../services/DragAndDrop/EndEventBuilder";

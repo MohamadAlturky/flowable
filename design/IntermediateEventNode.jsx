@@ -5,7 +5,8 @@ const labelStyle = {
   position: 'absolute',
   color: '#555',
   bottom: 10,
-  fontSize: 8,
+  fontSize: 10,
+  fontWeight:"600",
   transform: "translateX(-50%)",
   left: "50%",
   // backgroundColor:"red"
@@ -41,8 +42,8 @@ function IntermediateEventNode({ data }) {
         <Image
           src={image} // Path to your image
           alt="A description of the image"
-          width={100} // Desired width
-          height={80} // Desired height
+          width={110}
+          height={90}
         />
       </div>
       <div style={labelStyle}>{data.label}</div>

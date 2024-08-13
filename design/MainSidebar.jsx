@@ -191,7 +191,7 @@ export default function MainSidebar() {
 
                     <Image
                       draggable
-                      onDragStart={(event) => onDragStart(event, "pool")}
+                      onDragStart={(event) => onDragStart(event, "UserTask")}
                       src="/bpmn/user-task.png" // Path to your image
                       alt="A description of the image"
                       width={120} // Desired width
@@ -209,7 +209,7 @@ export default function MainSidebar() {
 
                     <Image
                       draggable
-                      onDragStart={(event) => onDragStart(event, "pool")}
+                      onDragStart={(event) => onDragStart(event, "ServiceTask")}
                       src="/bpmn/service-task.png" 
                       alt="A description of the image"
                       width={120} 
@@ -227,7 +227,7 @@ export default function MainSidebar() {
 
                     <Image
                       draggable
-                      onDragStart={(event) => onDragStart(event, "pool")}
+                      onDragStart={(event) => onDragStart(event, "ManualTask")}
                       src="/bpmn/manual-task.png" 
                       alt="A description of the image"
                       width={120} 

@@ -51,7 +51,7 @@ import PoolNode from "./PoolNode";
 import CircleNode from "./CircleNode";
 import TextNode from "./TextNode";
 import ButtonEdge from "./ButtonEdge";
-import Activity from "./Activity";
+import Activity from "./ManualTask";
 import Gateway from "./Gateway";
 import InsertValueModal from "../components/modals/InsertValueModal";
 import "@xyflow/react/dist/style.css";
