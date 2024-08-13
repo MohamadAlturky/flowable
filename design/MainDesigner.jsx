@@ -55,6 +55,9 @@ import CircleNode from "./CircleNode";
 import TextNode from "./TextNode";
 import IntermediateEventNode from "./IntermediateEventNode";
 import StartEventNode from "./StartEventNode";
+import AND from "./AND";
+import OR from "./OR";
+import XOR from "./XOR";
 import EndEventNode from "./EndEventNode";
 import ButtonEdge from "./ButtonEdge";
 import Activity from "./Activity";
@@ -76,7 +79,10 @@ const nodeTypes = {
   gateway: Gateway,
   Intermediate_Event: IntermediateEventNode,
   End_Event: EndEventNode,
-  Start_Event: StartEventNode
+  Start_Event: StartEventNode,
+  OR:OR,
+  XOR:XOR,
+  AND:AND
 };
 import InterEventBuilder from "../services/DragAndDrop/InterEventBuilder";
 import EndEventBuilder from "../services/DragAndDrop/EndEventBuilder";
@@ -224,21 +230,37 @@ const MainDesigner = () => {
       });
       setPosition(_position);
       console.log(event);
-      if (_type == "pool") {
-        setPoolModalOpen(true);
-      }
-      if (_type == "activity") {
-        setActivityModalOpen(true);
-      }
-      if (_type == "startevent") {
-        setEventModalOpen(true)
-      }
-      if (_type == "interevent") {
-        setEventModalOpen(true)
-      }
-      if (_type == "endevent") {
-        setEventModalOpen(true)
-      }
+      setNodes((nds) => nds.concat({
+        id:getId(),
+        type:_type,
+        data:{
+          label:"something"
+        },
+        position:_position
+      }));
+      // if (_type == "pool") {
+      //   setPoolModalOpen(true);
+      // }
+      // if (_type == "activity") {
+      //   setActivityModalOpen(true);
+      // }
+      // if (_type == "Start_Event") {
+      //   setNodes((nds) => nds.concat({
+      //     id:getId(),
+      //     type:"Start_Event",
+      //     data:{
+      //       label:"start"
+      //     },
+      //     position:_position
+      //   }));
+      //   // setEventModalOpen(true)
+      // }
+      // if (_type == "interevent") {
+      //   setEventModalOpen(true)
+      // }
+      // if (_type == "endevent") {
+      //   setEventModalOpen(true)
+      // }
     }
   };
 
@@ -776,7 +798,7 @@ const MainDesigner = () => {
                       </ControlButton>
                     </Controls>
                     <Background variant={BackgroundVariant.Dots} />
-                    <Panel position="top-right">
+                    {/* <Panel position="top-right">
                       <button onClick={() => onLayout({ direction: 'DOWN' })}>
                         vertical layout
                       </button>
@@ -793,7 +815,7 @@ const MainDesigner = () => {
                       <button onClick={() => onLayout({ direction: 'RIGHT' })}>
                         horizontal layout
                       </button>
-                    </Panel>
+                    </Panel> */}
                   </ReactFlow>
                 </ContextMenuTrigger>
 

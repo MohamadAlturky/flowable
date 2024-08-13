@@ -71,7 +71,7 @@ export default function MainSidebar() {
 
                     <Image
                       draggable
-                      onDragStart={(event) => onDragStart(event, "pool")}
+                      onDragStart={(event) => onDragStart(event, "Start_Event")}
                       src="/bpmn/start-event.png" // Path to your image
                       alt="A description of the image"
                       width={120} // Desired width
@@ -90,7 +90,7 @@ export default function MainSidebar() {
 
                     <Image
                       draggable
-                      onDragStart={(event) => onDragStart(event, "pool")}
+                      onDragStart={(event) => onDragStart(event, "Intermediate_Event")}
                       src="/bpmn/intermediate-event.png" // Path to your image
                       alt="A description of the image"
                       width={120} // Desired width
@@ -109,7 +109,7 @@ export default function MainSidebar() {
 
                     <Image
                       draggable
-                      onDragStart={(event) => onDragStart(event, "pool")}
+                      onDragStart={(event) => onDragStart(event, "End_Event")}
                       src="/bpmn/end-event.png" // Path to your image
                       alt="A description of the image"
                       width={120} // Desired width
@@ -132,7 +132,7 @@ export default function MainSidebar() {
 
                     <Image
                       draggable
-                      onDragStart={(event) => onDragStart(event, "pool")}
+                      onDragStart={(event) => onDragStart(event, "OR")}
                       src="/bpmn/gateway-or.png" // Path to your image
                       alt="A description of the image"
                       width={120} // Desired width
@@ -150,7 +150,7 @@ export default function MainSidebar() {
 
                     <Image
                       draggable
-                      onDragStart={(event) => onDragStart(event, "pool")}
+                      onDragStart={(event) => onDragStart(event, "AND")}
                       src="/bpmn/gateway-parallel.png" // Path to your image
                       alt="A description of the image"
                       width={120} // Desired width
@@ -168,7 +168,7 @@ export default function MainSidebar() {
 
                     <Image
                       draggable
-                      onDragStart={(event) => onDragStart(event, "pool")}
+                      onDragStart={(event) => onDragStart(event, "XOR")}
                       src="/bpmn/gateway-xor.png" // Path to your image
                       alt="A description of the image"
                       width={120} // Desired width

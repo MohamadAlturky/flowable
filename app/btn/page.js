@@ -1,115 +1,66 @@
 "use client"
-import React, { useCallback } from 'react';
-import {
-  ReactFlow,
-  addEdge,
-  ConnectionLineType,
-  Panel,
-  useNodesState,
-  useEdgesState,
-} from '@xyflow/react';
-import dagre from 'dagre';
+import React from 'react';
+import MarkdownRenderer from './markdown';
 
-import { initialNodes, initialEdges } from './nodes-edges.js';
+const markdownContent = `
+# Sample Markdown Document
 
-import '@xyflow/react/dist/style.css';
+## Introduction
+Welcome to this sample Markdown document. Here, we will explore various features of Markdown syntax.
 
-const dagreGraph = new dagre.graphlib.Graph();
-dagreGraph.setDefaultEdgeLabel(() => ({}));
+## Lists
+### Unordered List
+- Item 1
+- Item 2
+  - Subitem 2.1
+  - Subitem 2.2
+- Item 3
 
-const nodeWidth = 172;
-const nodeHeight = 36;
+### Ordered List
+1. First item
+2. Second item
+3. Third item
+   1. Subitem 3.1
+   2. Subitem 3.2
 
-const getLayoutedElements = (nodes, edges, direction = 'TB') => {
-  const isHorizontal = direction === 'LR';
-  dagreGraph.setGraph({ rankdir: direction });
+## Formatting
+Here are some formatting examples:
+- **Bold text**
+- *Italic text*
+- ~~Strikethrough text~~
+- \`Inline code\`
+- [Link to Google](https://www.google.com)
 
-  nodes.forEach((node) => {
-    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
-  }); 
+## Code Blocks
+\`\`\`javascript
+function helloWorld() {
+  console.log("Hello, world!");
+}
+helloWorld();
+\`\`\`
 
-  edges.forEach((edge) => {
-    dagreGraph.setEdge(edge.source, edge.target);
-  });
+## Blockquotes
+> This is a blockquote.
+> - Anonymous
 
-  dagre.layout(dagreGraph);
+## Tables
+| Name      | Age |
+| --------- | --- |
+| John      | 28  |
+| Jane      | 25  |
+| Bob       | 32  |
 
-  nodes.forEach((node) => {
-    const nodeWithPosition = dagreGraph.node(node.id)
-    node.targetPosition = isHorizontal ? 'left' : 'top'
-    node.sourcePosition = isHorizontal ? 'right' : 'bottom'
+## Conclusion
+That's it for our sample Markdown document. Enjoy writing in Markdown!
+`;
 
-    if (node.parentId != undefined) {
-      const parentNodeWithPosition = dagreGraph.node(node.parentId)
-      
-      node.position = {
-         x: nodeWithPosition.x - parentNodeWithPosition.x,
-         y: nodeWithPosition.y - parentNodeWithPosition.y,
-       }
-    } else {
-      console.log(node);
-      
-      node.position = {
-        x: nodeWithPosition.x,
-        y: nodeWithPosition.y,
-      }
-    }
-
-    return node
-  })
-
-  return { nodes, edges };
-};
-
-const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
-  initialNodes,
-  initialEdges,
-);
-
-const LayoutFlow = () => {
-  const [nodes, setNodes, onNodesChange] = useNodesState(layoutedNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(layoutedEdges);
-
-  const onConnect = useCallback(
-    (params) =>
-      setEdges((eds) =>
-        addEdge(
-          { ...params, type: ConnectionLineType.SmoothStep, animated: true },
-          eds,
-        ),
-      ),
-    [],
-  );
-  const onLayout = useCallback(
-    (direction) => {
-      const { nodes: layoutedNodes, edges: layoutedEdges } =
-        getLayoutedElements(nodes, edges, direction);
-
-      setNodes([...layoutedNodes]);
-      setEdges([...layoutedEdges]);
-    },
-    [nodes, edges],
-  );
-
+const Home = () => {
   return (
-    <div className='w-full h-screen'>
-
-    <ReactFlow
-      nodes={nodes}
-      edges={edges}
-      onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
-      onConnect={onConnect}
-      connectionLineType={ConnectionLineType.SmoothStep}
-      fitView
-    >
-      <Panel position="top-right">
-        <button onClick={() => onLayout('TB')}>vertical layout</button>
-        <button onClick={() => onLayout('LR')}>horizontal layout</button>
-      </Panel>
-    </ReactFlow>
+    <div>
+      <h1>Markdown Rendering Example</h1>
+      <MarkdownRenderer content={markdownContent} />
     </div>
   );
 };
 
-export default LayoutFlow;
+export default Home;
