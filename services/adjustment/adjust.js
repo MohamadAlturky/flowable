@@ -29,10 +29,10 @@ export function addIdToNodes(nodes) {
         position: { x: 1, y: 8 },
         data: { label: node.name },
         style: {
-            backgroundColor: "#4a00ff33",
-            border: "1px solid rgb(26, 25, 43)"
+            // backgroundColor: "#4a00ff33",
+            border: node.type == "pool" ? '1px solid #1a192b' : ""
         },
-        extent:"parent"
+        extent: "parent"
     }));
 }
 // export function updateParentIds(nodes, edges) {
@@ -217,60 +217,85 @@ import ELK from 'elkjs/lib/elk.bundled.js';
 const elk = new ELK();
 
 const elkOptions = {
-  'elk.algorithm': 'layered',
-  'elk.layered.spacing.nodeNodeBetweenLayers': '600',
-  'elk.spacing.nodeNode': '500',
+    'elk.algorithm': 'layered',
+    'elk.layered.spacing.nodeNodeBetweenLayers': '600',
+    'elk.spacing.nodeNode': '500',
 };
 
+function getWidth(type,node) {
+    console.log(type);
+    if (type == "ManualTask" || type == "UserTask" || type == "ServiceTask") {
+        return (50 + (node.data.label.length * 7))
+    }
+    if (type == "Intermediate_Event" || type == "End_Event" || type == "Start_Event"|| type == "AND"|| type == "XOR"|| type == "OR") {
+        return 110
+    }
+    return 0
+}
+
+function getHeight(type) {
+    console.log(type);
+    
+    if (type == "ManualTask" || type == "UserTask" || type == "ServiceTask") {
+        return 45
+    }
+    if (type == "Intermediate_Event" || type == "End_Event" || type == "Start_Event"|| type == "AND"|| type == "XOR"|| type == "OR") {
+        return 110
+    }
+    return 0
+}
+
 const getLayoutedElements = (nodes, edges, options = {}) => {
-  const isHorizontal = options?.['elk.direction'] === 'RIGHT';
-  const graph = {
-    id: 'root',
-    layoutOptions: options,
-    children: nodes.map((node) => ({
-      ...node,
+    const isHorizontal = options?.['elk.direction'] === 'RIGHT';
+    const graph = {
+        id: 'root',
+        layoutOptions: options,
+        children: nodes.map((node) => ({
+            ...node,
 
-      targetPosition: isHorizontal ? 'left' : 'top',
-      sourcePosition: isHorizontal ? 'right' : 'bottom',
+            targetPosition: isHorizontal ? 'left' : 'top',
+            sourcePosition: isHorizontal ? 'right' : 'bottom',
 
-    //   width: 50 + (node.data.label.length * 7),
-    //   height: 45,
-      width: node.style.width,
-      height: node.style.height,
-    })),
-    edges: edges,
-  };
+            //   width: 50 + (node.data.label.length * 7),
+            //   height: 45,
+            width: getWidth(node.type,node),
+            height: getHeight(node.type),
+            //   width: node.style.width,
+            //   height: node.style.height,
+        })),
+        edges: edges,
+    };
 
-  return elk
-    .layout(graph)
-    .then((layoutedGraph) => ({
-      nodes: layoutedGraph.children.map((node) => ({
-        ...node,
-        position: { x: node.x, y: node.y },
-      })),
+    return elk
+        .layout(graph)
+        .then((layoutedGraph) => ({
+            nodes: layoutedGraph.children.map((node) => ({
+                ...node,
+                position: { x: node.x, y: node.y },
+            })),
 
-      edges: layoutedGraph.edges,
-    }))
-    .catch(console.error);
+            edges: layoutedGraph.edges,
+        }))
+        .catch(console.error);
 };
 
 
 
 function aggregateNodesByParentId(nodes) {
     const aggregatedNodes = {};
-  
+
     nodes.forEach(node => {
-      const { parentId } = node;
-  
-      if (!aggregatedNodes[parentId]) {
-        aggregatedNodes[parentId] = [];
-      }
-  
-      aggregatedNodes[parentId].push(node);
+        const { parentId } = node;
+
+        if (!aggregatedNodes[parentId]) {
+            aggregatedNodes[parentId] = [];
+        }
+
+        aggregatedNodes[parentId].push(node);
     });
-  
+
     return aggregatedNodes;
-  }
+}
 //   function aggregateEdgesByNodeGroup(edges, aggregatedNodes) {
 //   const aggregatedEdges = {};
 
@@ -301,59 +326,59 @@ function aggregateNodesByParentId(nodes) {
 
 function aggregateEdgesByNodeGroup(edges, aggregatedNodes) {
     const aggregatedEdges = {};
-  
+
     // Create a reverse lookup for nodeId to parentId
     const nodeToParentMap = {};
     for (const parentId in aggregatedNodes) {
-      aggregatedNodes[parentId].forEach(node => {
-        nodeToParentMap[node.id] = parentId;
-      });
+        aggregatedNodes[parentId].forEach(node => {
+            nodeToParentMap[node.id] = parentId;
+        });
     }
-  
+
     edges.forEach(edge => {
-      const sourceParentId = nodeToParentMap[edge.source];
-      const targetParentId = nodeToParentMap[edge.target];
-  
-      // Only aggregate edges where both source and target have the same parentId
-      if (sourceParentId && sourceParentId === targetParentId) {
-        if (!aggregatedEdges[sourceParentId]) {
-          aggregatedEdges[sourceParentId] = [];
+        const sourceParentId = nodeToParentMap[edge.source];
+        const targetParentId = nodeToParentMap[edge.target];
+
+        // Only aggregate edges where both source and target have the same parentId
+        if (sourceParentId && sourceParentId === targetParentId) {
+            if (!aggregatedEdges[sourceParentId]) {
+                aggregatedEdges[sourceParentId] = [];
+            }
+            aggregatedEdges[sourceParentId].push(edge);
         }
-        aggregatedEdges[sourceParentId].push(edge);
-      }
     });
-  
+
     return aggregatedEdges;
-  }
+}
 
-  
-  export async function ADJUST(nodes, edges) {
-      
-      const aggregated = aggregateNodesByParentId(nodes);
-      console.log(aggregated);
-      
-      const aggregatedEdges = aggregateEdgesByNodeGroup(edges, aggregated);
-      console.log(aggregatedEdges);
-      let layouted = []
-      const opts = { 'elk.direction': "RIGHT", ...elkOptions };
 
-      for (const parentId in aggregated) {
+export async function ADJUST(nodes, edges) {
+
+    const aggregated = aggregateNodesByParentId(nodes);
+    console.log(aggregated);
+
+    const aggregatedEdges = aggregateEdgesByNodeGroup(edges, aggregated);
+    console.log(aggregatedEdges);
+    let layouted = []
+    const opts = { 'elk.direction': "RIGHT", ...elkOptions };
+
+    for (const parentId in aggregated) {
         const nodesGroup = aggregated[parentId];
         const edgesGroup = aggregatedEdges[parentId] || [];
-        const layoutedElements = await getLayoutedElements(nodesGroup, edgesGroup,opts);
+        const layoutedElements = await getLayoutedElements(nodesGroup, edgesGroup, opts);
         console.log(layoutedElements);
-        
+
         layouted.push(...(layoutedElements.nodes))
         console.log(`Layouted elements for parentId ${parentId}:`, layoutedElements);
-      }
+    }
 
-      console.log(layouted);
-      return {nodes :layouted,edges:edges}
+    console.log(layouted);
+    return { nodes: layouted, edges: edges }
     // console.log("nodes");
     // console.log(nodes);
     // console.log("edges");
     // console.log( edges);
-    
+
     // let newNodes = addIdToNodes(nodes)
     // // console.log(newNodes);
     // let newEdges = addIdToTransitionsNew(edges)
@@ -364,10 +389,10 @@ function aggregateEdgesByNodeGroup(edges, aggregatedNodes) {
     // tree.forEach(rootNode => calculateDimensions(rootNode));
     // console.log(tree);
     // tree = adjustNodesPositions(tree)
-    
+
     // // let NewNewNodes = []
     // // tree.forEach(e => e.children = getLayoutedElements(e.children,newEdges.filter(ed=>ed)).nodes)
-    
+
     // // let LASTNewNewNodes = []
 
     // let lastNodes = []

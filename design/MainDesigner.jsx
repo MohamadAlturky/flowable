@@ -119,36 +119,61 @@ const elkOptions = {
   'elk.spacing.nodeNode': '400',
 };
 
+function getWidth(type,node) {
+  console.log(type);
+  if (type == "ManualTask" || type == "UserTask" || type == "ServiceTask") {
+      return (50 + (node.data.label.length * 7))
+  }
+  if (type == "Intermediate_Event" || type == "End_Event" || type == "Start_Event"|| type == "AND"|| type == "XOR"|| type == "OR") {
+      return 110
+  }
+  return 0
+}
+
+function getHeight(type) {
+  console.log(type);
+  
+  if (type == "ManualTask" || type == "UserTask" || type == "ServiceTask") {
+      return 45
+  }
+  if (type == "Intermediate_Event" || type == "End_Event" || type == "Start_Event"|| type == "AND"|| type == "XOR"|| type == "OR") {
+      return 110
+  }
+  return 0
+}
+
 const getLayoutedElements = (nodes, edges, options = {}) => {
   const isHorizontal = options?.['elk.direction'] === 'RIGHT';
   const graph = {
-    id: 'root',
-    layoutOptions: options,
-    children: nodes.map((node) => ({
-      ...node,
+      id: 'root',
+      layoutOptions: options,
+      children: nodes.map((node) => ({
+          ...node,
 
-      targetPosition: isHorizontal ? 'left' : 'top',
-      sourcePosition: isHorizontal ? 'right' : 'bottom',
+          targetPosition: isHorizontal ? 'left' : 'top',
+          sourcePosition: isHorizontal ? 'right' : 'bottom',
 
-      width: 50 + (node.data.label.length * 7),
-      height: 45,
-    })),
-    edges: edges,
+          //   width: 50 + (node.data.label.length * 7),
+          //   height: 45,
+          width: getWidth(node.type,node),
+          height: getHeight(node.type),
+          //   width: node.style.width,
+          //   height: node.style.height,
+      })),
+      edges: edges,
   };
 
   return elk
-    .layout(graph)
-    .then((layoutedGraph) => ({
-      nodes: layoutedGraph.children.map((node) => ({
-        ...node,
-        // React Flow expects a position property on the node instead of `x`
-        // and `y` fields.
-        position: { x: node.x, y: node.y },
-      })),
+      .layout(graph)
+      .then((layoutedGraph) => ({
+          nodes: layoutedGraph.children.map((node) => ({
+              ...node,
+              position: { x: node.x, y: node.y },
+          })),
 
-      edges: layoutedGraph.edges,
-    }))
-    .catch(console.error);
+          edges: layoutedGraph.edges,
+      }))
+      .catch(console.error);
 };
 
 // 
@@ -366,6 +391,30 @@ const MainDesigner = () => {
         let layoutedNodes = layouted.nodes
         let pools = layoutedNodes.filter(e => e.type == "pool")
         layoutedNodes = layoutedNodes.filter(e => e.type != "pool")
+
+        layoutedNodes.forEach((e) => {
+          if (type == "Intermediate_Event" || type == "End_Event" || type == "Start_Event"|| type == "AND"|| type == "XOR"|| type == "OR") {
+            e.resizable= true
+            e.style= {
+            }
+            e.extent= "parent"
+
+            let x = e["style"]
+            delete e["height"]
+            delete e["measured"]
+            delete e["targetPosition"]
+            delete e["sourcePosition"]
+            delete e["width"]
+            delete e["x"]
+            delete e["y"]
+            delete e["$H"]
+            // e.style = {
+            //   // ...x,
+            //   // width: (50 + (e.data.label.length * 7)),
+            //   height: 110
+            // }
+          }
+        })
         pools.forEach((e) => {
           let x = e.style
           e.width = 10000 
@@ -894,6 +943,9 @@ const MainDesigner = () => {
                             Events
                           </ContextMenuItem>
                           <ContextMenuItem onClick={() => {
+                            console.log("nodes");
+                            console.log(nodes);
+                            
                             if (report) {
                               setPoolsReportModalOpen(true)
                             }

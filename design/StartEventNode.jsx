@@ -9,6 +9,7 @@ const labelStyle = {
   fontWeight:"600",
   transform: "translateX(-50%)",
   left: "50%",
+  width:"fit-content"
   // backgroundColor:"red"
 };
 
