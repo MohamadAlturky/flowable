@@ -21,7 +21,6 @@ export default function InsertValueModal({ isOpen, setIsOpen, setValueName, titl
   const { toast } = useToast()
 
   React.useEffect(() => {
-    console.log(inputRef);
     setTimeout(() => {
       if (isOpen) {
         try {
@@ -40,7 +39,6 @@ export default function InsertValueModal({ isOpen, setIsOpen, setValueName, titl
         <form onSubmit={(e) => {
           e.preventDefault()
           if (value == "") {
-            console.log(value);
             toast({
               title: "❌ Uh oh!",
               description: `please fill the input section.`,
@@ -69,19 +67,6 @@ export default function InsertValueModal({ isOpen, setIsOpen, setValueName, titl
             </div>
             <DrawerFooter>
               <Button
-                // onClick={() => {
-                //   if (value == "") {
-                //     toast({
-                //       title: "❌ Uh oh!",
-                //       description: `please fill the input section.`,
-                //     })
-                //   }
-                //   else {
-                //     setIsOpen(false)
-                //     setValue("")
-                //     setValueName(value)
-                //   }
-                // }}
                 type="submit"
               >{label || "Insert"}</Button>
               <Button variant="outline" onClick={() => {

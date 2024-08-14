@@ -43,7 +43,7 @@ function XOR({ data }) {
           src={image} // Path to your image
           alt="A description of the image"
           width={110}
-          height={90}
+          height={110}
         />
       </div>
       <div style={labelStyle}>{data.label}</div>

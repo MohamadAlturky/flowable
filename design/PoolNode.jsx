@@ -4,6 +4,7 @@ import React from "react";
 import AreYouSureToDelete from "../components/modals/AreYouSureToDelete"
 import InsertValueModal from "../components/modals/InsertValueModal"
 import BuildLaneNode from "@/services/builders/LaneBuilder";
+import {removeNodeAndChildren} from "../services/nodes/manage";
 
 import {
   ContextMenu,
@@ -49,7 +50,7 @@ function PoolNode({ id, data, selected }) {
                 height: "100%",
                 borderRight: "1px solid",
                 zIndex:100,
-                backgroundColor:"white",
+                // backgroundColor:"white",
                 // position: "absolute",
                 // left: -50,
                 // backgroundColor:"salmon"
@@ -80,11 +81,11 @@ function PoolNode({ id, data, selected }) {
             Remove
             <ContextMenuShortcut>⌘</ContextMenuShortcut>
           </ContextMenuItem>
-          <ContextMenuItem inset
+          {/* <ContextMenuItem inset
             onClick={(e) => { setLaneModalOpen(true) }}>
             Insert Lane
             <ContextMenuShortcut>⌘</ContextMenuShortcut>
-          </ContextMenuItem>
+          </ContextMenuItem> */}
 
           <ContextMenuSeparator />
 
@@ -100,7 +101,8 @@ function PoolNode({ id, data, selected }) {
         supTitle={"this pool will be deleted with it's lanes and activities!!!"}
         title={"Are you sure?"}
         callBack={() => {
-          const newNodes = reactFlow.getNodes().filter(n => n.id != id)
+          let newNodes = removeNodeAndChildren(reactFlow.getNodes(),id)
+          // const newNodes = reactFlow.getNodes().filter(n => n.id != id)
           data.setNodes(newNodes)
           toast({
             title: "✅ Greate!",

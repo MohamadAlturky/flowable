@@ -236,14 +236,23 @@ const MainDesigner = () => {
       });
       setPosition(_position);
       console.log(event);
-      setNodes((nds) => nds.concat({
-        id:getId(),
-        type:_type,
-        data:{
-          label:"something"
-        },
-        position:_position
-      }));
+      if (_type == "pool") {
+        setPoolModalOpen(true);
+      }
+      else{
+        setEventModalOpen(true);
+
+        // setNodes((nds) => nds.concat({
+
+        //   id:getId(),
+        //   type:_type,
+        //   data:{
+        //     label:"something"
+        //   },
+        //   position:_position
+        // }));
+      }
+      
       // if (_type == "pool") {
       //   setPoolModalOpen(true);
       // }
@@ -329,7 +338,7 @@ const MainDesigner = () => {
       "notes": "",
       "report": ""
     }
-    axiosInstance.post(apiUrl.aiUrl + "/generate/bpmn", data)
+    axiosInstance.post(apiUrl.aiUrl + "/bpmn/generate", data)
       .then(async (res) => {
         console.log("res.data.nodes");
         console.log("-------------------------------------------------");
@@ -1006,43 +1015,18 @@ const MainDesigner = () => {
                 placeholder={"write here.."}
                 isOpen={eventModalOpen}
                 setIsOpen={setEventModalOpen}
-                supTitle={"set the task name."}
-                title={"Write Task Name"}
+                supTitle={"set the activity name."}
+                title={"Write Activity Name"}
                 setValueName={async (v) => {
-
-                  let node = null
-
-                  if (type == "startevent") {
-                    node = StartEventBuilder(
-                      position,
-                      type,
-                      nodes,
-                      v,
-                      setNodes,
-                      getId
-                    );
-                  }
-                  if (type == "interevent") {
-                    node = InterEventBuilder(
-                      position,
-                      type,
-                      nodes,
-                      v,
-                      setNodes,
-                      getId
-                    );
-                  }
-                  if (type == "endevent") {
-                    node = EndEventBuilder(
-                      position,
-                      type,
-                      nodes,
-                      v,
-                      setNodes,
-                      getId
-                    );
-                  }
-
+                  let node = BuildActivityNode(
+                    position,
+                    type,
+                    nodes,
+                    v,
+                    setNodes,
+                    getId
+                  );
+                  
                   if (node != null) {
                     setNodes((nds) => nds.concat(node));
                     toast({

@@ -2,13 +2,13 @@ import { MarkerType } from '@xyflow/react';
 
 export function addIdToTransitions(transitions) {
     return transitions.map(transition => ({
-        source: transition.from,
-        target: transition.to,
+        source: transition.source,
+        target: transition.target,
         markerEnd: {
             type: MarkerType.Arrow,
         },
         label: transition.condition && transition.condition || '',
-        id: `${transition.from.replace(/\s+/g, '_')}_${transition.to.replace(/\s+/g, '_')}`
+        id: `${transition.source.replace(/\s+/g, '_')}_${transition.target.replace(/\s+/g, '_')}`
     }));
 }
 export function addIdToTransitionsNew(transitions) {
@@ -25,7 +25,7 @@ export function addIdToTransitionsNew(transitions) {
 export function addIdToNodes(nodes) {
     return nodes.map(node => ({
         ...node,
-        id: node.name,
+        // id: node.name,
         position: { x: 1, y: 8 },
         data: { label: node.name },
         style: {

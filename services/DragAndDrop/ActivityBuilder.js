@@ -56,14 +56,14 @@ export default function BuildActivityNode(position, type, nodes, name, setNodes,
         data: { label: `${name}`, setNodes: setNodes, getId: getId, displayOrder: 3 },
         resizable: true,
         style: {
-            width: width,
-            height: 50,
-            borderRadius: '3px',
-            border: '1px solid #1a192b',
-            fontWeight: "900",
-            color: "white",
-            backgroundColor: "rgb(123, 75, 242, 93)",
-            zIndex:300
+            // width: width,
+            // height: 90
+            // borderRadius: '3px',
+            // border: '1px solid #1a192b',
+            // fontWeight: "900",
+            // color: "white",
+            // backgroundColor: "rgb(123, 75, 242, 93)",
+            // zIndex:300
         },
         extent: "parent",
         parentId: parent.id,

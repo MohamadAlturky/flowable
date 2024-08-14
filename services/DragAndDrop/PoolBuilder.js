@@ -9,8 +9,6 @@ export default function BuildPoolNode(position, type, nodes, name, setNodes,getI
         style: {
             width: 500,
             height: 200,
-            zIndex:100,
-            backgroundColor:"white",
             border: '1px solid #1a192b'
         }
     };

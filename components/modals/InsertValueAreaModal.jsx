@@ -18,7 +18,6 @@ export default function InsertValueAreaModal({ isOpen, setIsOpen, setValueName, 
   {
     defaultValue = ""
   }
-  console.log("defaultValue",defaultValue);
   const [value, setValue] = React.useState(defaultValue)
   const inputRef = React.useRef(null);
   const { toast } = useToast()
