@@ -363,7 +363,7 @@ const MainDesigner = () => {
       "notes": "",
       "report": ""
     }
-    axiosInstance.post(apiUrl.aiUrl + "/bpmn/generate", data)
+    axiosInstance.post(apiUrl.aiUrl + "/bpmn/generateV3", data)
       .then(async (res) => {
         console.log("res.data.nodes");
         console.log("-------------------------------------------------");
@@ -372,8 +372,9 @@ const MainDesigner = () => {
         let newNodes = addIdToNodes(res.data.nodes)
         // console.log(newNodes);
         let newEdges = addIdToTransitions(res.data.edges)
+        let newEdgesCopy = newEdges
         // console.log(newEdges);
-        newNodes = updateParentIds(newNodes, newEdges)
+        // newNodes = updateParentIds(newNodes, newEdges)
         // // let tree = buildTree(newNodes)
         // // // console.log(tree);
         // // tree.forEach(rootNode => calculateDimensions(rootNode));
@@ -397,7 +398,7 @@ const MainDesigner = () => {
             e.resizable= true
             e.style= {
             }
-            e.extent= "parent"
+            // e.extent= "parent"
 
             let x = e["style"]
             delete e["height"]
@@ -408,6 +409,7 @@ const MainDesigner = () => {
             delete e["x"]
             delete e["y"]
             delete e["$H"]
+            delete e["extent"]
             // e.style = {
             //   // ...x,
             //   // width: (50 + (e.data.label.length * 7)),
@@ -429,16 +431,18 @@ const MainDesigner = () => {
         console.log(pools);
         
         let NlayoutedNodes = []
-        pools.forEach((e) => NlayoutedNodes.push(e))
+        // pools.forEach((e) => NlayoutedNodes.push(e))
         let layoutedEdges = layouted.edges
         layoutedNodes.forEach((e) =>e.position.x += 50)
         layoutedNodes.forEach((e) => NlayoutedNodes.push(e))
 
         console.log("layouted");
         console.log(NlayoutedNodes);
+        console.log("edges");
+        console.log(newEdgesCopy);
 
         setNodes(NlayoutedNodes);
-        setEdges(() => layoutedEdges)
+        setEdges(() => newEdgesCopy)
 
         toast({
           title: "✅ Greate!",
@@ -945,6 +949,7 @@ const MainDesigner = () => {
                           <ContextMenuItem onClick={() => {
                             console.log("nodes");
                             console.log(nodes);
+                            console.log(edges);
                             
                             if (report) {
                               setPoolsReportModalOpen(true)

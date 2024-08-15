@@ -7,21 +7,22 @@ export function addIdToTransitions(transitions) {
         markerEnd: {
             type: MarkerType.Arrow,
         },
-        label: transition.condition && transition.condition || '',
-        id: `${transition.source.replace(/\s+/g, '_')}_${transition.target.replace(/\s+/g, '_')}`
+        // label: transition.condition && transition.condition || '',
+        id: transition.id
+        // id: `${transition.source.replace(/\s+/g, '_')}_${transition.target.replace(/\s+/g, '_')}`
     }));
 }
-export function addIdToTransitionsNew(transitions) {
-    return transitions.map(transition => ({
-        source: transition.source,
-        target: transition.target,
-        markerEnd: {
-            type: MarkerType.Arrow,
-        },
-        label: transition.condition && transition.condition || '',
-        id: `${transition.source.replace(/\s+/g, '_')}_${transition.target.replace(/\s+/g, '_')}`
-    }));
-}
+// export function addIdToTransitionsNew(transitions) {
+//     return transitions.map(transition => ({
+//         source: transition.source,
+//         target: transition.target,
+//         markerEnd: {
+//             type: MarkerType.Arrow,
+//         },
+//         label: transition.condition && transition.condition || '',
+//         id: `${transition.source.replace(/\s+/g, '_')}_${transition.target.replace(/\s+/g, '_')}`
+//     }));
+// }
 export function addIdToNodes(nodes) {
     return nodes.map(node => ({
         ...node,
