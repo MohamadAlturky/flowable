@@ -363,7 +363,7 @@ const MainDesigner = () => {
       "notes": "",
       "report": ""
     }
-    axiosInstance.post(apiUrl.aiUrl + "/bpmn/generateV3", data)
+    axiosInstance.post(apiUrl.aiUrl + "/bpmn/generateV4", data)
       .then(async (res) => {
         console.log("res.data.nodes");
         console.log("-------------------------------------------------");

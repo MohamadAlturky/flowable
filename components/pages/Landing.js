@@ -1,6 +1,6 @@
 import React from "react"
 import Link from "next/link"
-import { CircleUser, Menu, Package2, Search } from "lucide-react"
+import { CircleUser, Menu, Bot, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -23,39 +23,40 @@ export default function Landing({children}) {
             href="#"
             className="flex items-center gap-2 text-lg font-semibold md:text-base"
           >
-            <Package2 className="h-6 w-6" />
+            <Bot className="h-6 w-6" />
             <span className="sr-only">Acme Inc</span>
           </Link>
           <Link
-            href="#"
+            href="/"
             className="text-muted-foreground transition-colors hover:text-foreground"
           >
-            Dashboard
+            Home
           </Link>
           <Link
             href="#"
             className="text-muted-foreground transition-colors hover:text-foreground"
           >
-            Orders
+            BPMN
+          </Link>
+          <Link
+            href="/projects"
+            className="text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Projects
           </Link>
           <Link
             href="#"
             className="text-muted-foreground transition-colors hover:text-foreground"
           >
-            Products
+            Help
           </Link>
-          <Link
-            href="#"
-            className="text-muted-foreground transition-colors hover:text-foreground"
-          >
-            Customers
-          </Link>
-          <Link
+          
+          {/* <Link
             href="#"
             className="text-foreground transition-colors hover:text-foreground"
           >
             Settings
-          </Link>
+          </Link> */}
         </nav>
         <Sheet>
           <SheetTrigger asChild>
@@ -75,7 +76,7 @@ export default function Landing({children}) {
                 href="#"
                 className="flex items-center gap-2 text-lg font-semibold"
               >
-                <Package2 className="h-6 w-6" />
+                <Bot className="h-6 w-6" />
                 <span className="sr-only">Acme Inc</span>
               </Link>
               <Link
@@ -96,7 +97,7 @@ export default function Landing({children}) {
               >
                 Products
               </Link>
-              <Link
+              {/* <Link
                 href="#"
                 className="text-muted-foreground hover:text-foreground"
               >
@@ -104,7 +105,7 @@ export default function Landing({children}) {
               </Link>
               <Link href="#" className="hover:text-foreground">
                 Settings
-              </Link>
+              </Link> */}
             </nav>
           </SheetContent>
         </Sheet>
@@ -139,14 +140,14 @@ export default function Landing({children}) {
           <nav
             className="grid gap-4 text-sm text-muted-foreground" x-chunk="dashboard-04-chunk-0"
           >
-            <Link href="/" className="font-semibold text-primary">
+            <Link href="/" className="font-bold text-primary underline">
               Dashboard
             </Link>
             <Link href="/projects">Projects</Link>
             <Link href="/invitations">Invitations</Link>
-            <Link href="#">Support</Link>
-            <Link href="#">Organizations</Link>
-            <Link href="#">Advanced</Link>
+            <Link href="#">Notifications</Link>
+            {/* <Link href="#">Learn BPMN</Link> */}
+            {/* <Link href="#">Advanced</Link> */}
           </nav>
       
         {children}
