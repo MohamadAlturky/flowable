@@ -7,7 +7,7 @@ export function addIdToTransitions(transitions) {
         markerEnd: {
             type: MarkerType.Arrow,
         },
-        // label: transition.condition && transition.condition || '',
+        label: transition.condition && transition.condition || '',
         id: transition.id
         // id: `${transition.source.replace(/\s+/g, '_')}_${transition.target.replace(/\s+/g, '_')}`
     }));
