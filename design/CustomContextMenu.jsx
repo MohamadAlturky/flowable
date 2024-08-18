@@ -37,6 +37,7 @@ export default function CustomContextMenu({
     setNodes((nodes) => {
       let newNodes = nodes.filter((node) => node.id !== id)
       newNodes = newNodes.filter((node) => node.parentId !== id)
+      return newNodes
     });
     // setEdges((edges) => edges.filter((edge) => edge.source !== id));
   }, [id, setNodes, setEdges]);
