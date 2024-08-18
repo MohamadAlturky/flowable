@@ -1,6 +1,7 @@
 "use client";
 import { PuffLoader } from "react-spinners";
 import { buildTree, calculateDimensions, adjustNodesPositions, addIdToNodes, addIdToTransitions, flattenTree, updateParentIds, ADJUST } from '../services/adjustment/adjust';
+import "./contextMenu.css"
 import {
   ContextMenu,
   ContextMenuCheckboxItem,
@@ -27,7 +28,7 @@ import { FitViewIcon } from "./Icons/FitView";
 import { ControlButton } from "@xyflow/react";
 import axios from "axios";
 import React, { useCallback, useEffect } from "react";
-import { useState, DragEvent } from "react";
+import { useState, DragEvent, useRef } from "react";
 import BuildPoolNode from "../services/DragAndDrop/PoolBuilder";
 import BuildActivityNode from "../services/DragAndDrop/ActivityBuilder";
 import {
@@ -83,12 +84,12 @@ const nodeTypes = {
   Intermediate_Event: IntermediateEventNode,
   End_Event: EndEventNode,
   Start_Event: StartEventNode,
-  OR:OR,
-  XOR:XOR,
-  AND:AND,
-  UserTask:UserTask,
-  ServiceTask:ServiceTask,
-  ManualTask:ManualTask
+  OR: OR,
+  XOR: XOR,
+  AND: AND,
+  UserTask: UserTask,
+  ServiceTask: ServiceTask,
+  ManualTask: ManualTask
 };
 import InterEventBuilder from "../services/DragAndDrop/InterEventBuilder";
 import EndEventBuilder from "../services/DragAndDrop/EndEventBuilder";
@@ -119,25 +120,25 @@ const elkOptions = {
   'elk.spacing.nodeNode': '400',
 };
 
-function getWidth(type,node) {
+function getWidth(type, node) {
   console.log(type);
   if (type == "ManualTask" || type == "UserTask" || type == "ServiceTask") {
-      return (50 + (node.data.label.length * 7))
+    return (50 + (node.data.label.length * 7))
   }
-  if (type == "Intermediate_Event" || type == "End_Event" || type == "Start_Event"|| type == "AND"|| type == "XOR"|| type == "OR") {
-      return 110
+  if (type == "Intermediate_Event" || type == "End_Event" || type == "Start_Event" || type == "AND" || type == "XOR" || type == "OR") {
+    return 110
   }
   return 0
 }
 
 function getHeight(type) {
   console.log(type);
-  
+
   if (type == "ManualTask" || type == "UserTask" || type == "ServiceTask") {
-      return 45
+    return 45
   }
-  if (type == "Intermediate_Event" || type == "End_Event" || type == "Start_Event"|| type == "AND"|| type == "XOR"|| type == "OR") {
-      return 110
+  if (type == "Intermediate_Event" || type == "End_Event" || type == "Start_Event" || type == "AND" || type == "XOR" || type == "OR") {
+    return 110
   }
   return 0
 }
@@ -145,50 +146,90 @@ function getHeight(type) {
 const getLayoutedElements = (nodes, edges, options = {}) => {
   const isHorizontal = options?.['elk.direction'] === 'RIGHT';
   const graph = {
-      id: 'root',
-      layoutOptions: options,
-      children: nodes.map((node) => ({
-          ...node,
+    id: 'root',
+    layoutOptions: options,
+    children: nodes.map((node) => ({
+      ...node,
 
-          targetPosition: isHorizontal ? 'left' : 'top',
-          sourcePosition: isHorizontal ? 'right' : 'bottom',
+      targetPosition: isHorizontal ? 'left' : 'top',
+      sourcePosition: isHorizontal ? 'right' : 'bottom',
 
-          //   width: 50 + (node.data.label.length * 7),
-          //   height: 45,
-          width: getWidth(node.type,node),
-          height: getHeight(node.type),
-          //   width: node.style.width,
-          //   height: node.style.height,
-      })),
-      edges: edges,
+      //   width: 50 + (node.data.label.length * 7),
+      //   height: 45,
+      width: getWidth(node.type, node),
+      height: getHeight(node.type),
+      //   width: node.style.width,
+      //   height: node.style.height,
+    })),
+    edges: edges,
   };
 
   return elk
-      .layout(graph)
-      .then((layoutedGraph) => ({
-          nodes: layoutedGraph.children.map((node) => ({
-              ...node,
-              position: { x: node.x, y: node.y },
-          })),
+    .layout(graph)
+    .then((layoutedGraph) => ({
+      nodes: layoutedGraph.children.map((node) => ({
+        ...node,
+        position: { x: node.x, y: node.y },
+      })),
 
-          edges: layoutedGraph.edges,
-      }))
-      .catch(console.error);
+      edges: layoutedGraph.edges,
+    }))
+    .catch(console.error);
 };
 
 // 
 // 
 // 
 // 
+import CustomContextMenu from './CustomContextMenu';
 
-let id = 0;
-const getId = () => `${id++}`;
+// let id = 0;
+import { Guid } from 'js-guid';
+
+const getId = () => {
+
+  let guid = Guid.newGuid();
+  console.log(guid.toString());
+  return `${guid.toString()}`
+};
 
 const nodeClassName = (node) => node.type;
 import MainSidebar from "./MainSidebar";
 import apiUrl from "../configurations/apiConfiguration.json";
 
 const MainDesigner = () => {
+  const [menu, setMenu] = useState(null);
+  const ref = useRef(null);
+
+  // 
+
+  const onNodeContextMenu = useCallback(
+    (event, node) => {
+      // Prevent native context menu from showing
+      event.preventDefault();
+
+      // Calculate position of the context menu. We want to make sure it
+      // doesn't get positioned off-screen.
+      const pane = ref.current.getBoundingClientRect();
+      setMenu({
+        id: node.id,
+        top: event.clientY < pane.height - 200 && event.clientY,
+        left: event.clientX < pane.width - 200 && event.clientX,
+        right: event.clientX >= pane.width - 200 && pane.width - event.clientX,
+        bottom:
+          event.clientY >= pane.height - 200 && pane.height - event.clientY,
+      });
+    },
+    [setMenu],
+  );
+
+  // Close the context menu if it's open whenever the window is clicked.
+  const onPaneClick = useCallback(() => setMenu(null), [setMenu]);
+  const [editNameModalOpen, setEditNameModalOpen] = React.useState(false);
+  const [editId, setEditId] = React.useState("");
+
+
+  // 
   const { toast } = useToast();
   const [process, setProcess] = useState("");
   const [poolModalOpen, setPoolModalOpen] = useState(false);
@@ -264,7 +305,7 @@ const MainDesigner = () => {
       if (_type == "pool") {
         setPoolModalOpen(true);
       }
-      else{
+      else {
         setEventModalOpen(true);
 
         // setNodes((nds) => nds.concat({
@@ -277,7 +318,7 @@ const MainDesigner = () => {
         //   position:_position
         // }));
       }
-      
+
       // if (_type == "pool") {
       //   setPoolModalOpen(true);
       // }
@@ -394,9 +435,9 @@ const MainDesigner = () => {
         layoutedNodes = layoutedNodes.filter(e => e.type != "pool")
 
         layoutedNodes.forEach((e) => {
-          if (type == "Intermediate_Event" || type == "End_Event" || type == "Start_Event"|| type == "AND"|| type == "XOR"|| type == "OR") {
-            e.resizable= true
-            e.style= {
+          if (type == "Intermediate_Event" || type == "End_Event" || type == "Start_Event" || type == "AND" || type == "XOR" || type == "OR") {
+            e.resizable = true
+            e.style = {
             }
             // e.extent= "parent"
 
@@ -419,21 +460,21 @@ const MainDesigner = () => {
         })
         pools.forEach((e) => {
           let x = e.style
-          e.width = 10000 
-          e.height = 1000 
+          e.width = 10000
+          e.height = 1000
           e.style = {
             ...x,
-            backgroundColor:"transparent",
+            backgroundColor: "transparent",
             width: 10000,
             height: 1000
           }
         })
         console.log(pools);
-        
+
         let NlayoutedNodes = []
         // pools.forEach((e) => NlayoutedNodes.push(e))
         let layoutedEdges = layouted.edges
-        layoutedNodes.forEach((e) =>e.position.x += 50)
+        layoutedNodes.forEach((e) => e.position.x += 50)
         layoutedNodes.forEach((e) => NlayoutedNodes.push(e))
 
         console.log("layouted");
@@ -836,6 +877,9 @@ const MainDesigner = () => {
                       onNodesChange(e);
                       // console.log(e);
                     }}
+                    ref={ref}
+                    onPaneClick={onPaneClick}
+                    onNodeContextMenu={onNodeContextMenu}
                     onEdgesChange={onEdgesChange}
                     onNodeDoubleClick={onNodeDoubleClick}
                     onConnect={onConnect}
@@ -866,6 +910,11 @@ const MainDesigner = () => {
                       </ControlButton>
                     </Controls>
                     <Background variant={BackgroundVariant.Dots} />
+                    {menu && <CustomContextMenu onClick={onPaneClick} {...menu} onEdit={(id) => {
+                      setEditNameModalOpen(true)
+                      setEditId(id)
+                    }} />}
+
                     {/* <Panel position="top-right">
                       <button onClick={() => onLayout({ direction: 'DOWN' })}>
                         vertical layout
@@ -950,7 +999,7 @@ const MainDesigner = () => {
                             console.log("nodes");
                             console.log(nodes);
                             console.log(edges);
-                            
+
                             if (report) {
                               setPoolsReportModalOpen(true)
                             }
@@ -1083,7 +1132,7 @@ const MainDesigner = () => {
                     setNodes,
                     getId
                   );
-                  
+
                   if (node != null) {
                     setNodes((nds) => nds.concat(node));
                     toast({
@@ -1107,6 +1156,52 @@ const MainDesigner = () => {
                   {/* <PoolsReportModal isOpen={poolsReportModalOpen} setIsOpen={setPoolsReportModalOpen} title={"Pools And Lanes Report"} supTitle={"this report is generated by AI."} report={(report.poolsLanes_report.content.pools!= undefined)?report.poolsLanes_report.content.pools:report.poolsLanes_report.content} /> */}
                 </>
               )}
+              {editNameModalOpen && (
+                <InsertValueModal
+                  placeholder={"write here.."}
+                  isOpen={editNameModalOpen}
+                  setIsOpen={setEditNameModalOpen}
+                  label={"Edit"}
+                  supTitle={"edit the element name."}
+                  title={"Element Name"}
+                  setValueName={async (v) => {
+                    console.log(v);
+                    console.log(editId);
+                    let NewNodes = []
+                    for (let i = 0; i < nodes.length; i++) {
+                      if (nodes[i].id != editId) {
+                        NewNodes.push(nodes[i])
+                      }
+                      else {
+                        let node = {
+                          ...nodes[i],
+                          data: { label: v }
+                        }
+                        NewNodes.push(node)
+                      }
+                    }
+                    setNodes(() => NewNodes)
+                    // const newPrompt = {
+                    //   id:v ,
+                    //   content:selectedPrompt.content,
+                    //   inputs:selectedPrompt.inputs
+                    // }    
+                    // storeObjectInLocalStorage(selectedPrompt.id,null)
+                    // storeObjectInLocalStorage(newPrompt.id,newPrompt)
+                    // const newPrompts = prompts.filter(p=>p.id!=selectedPrompt.id)
+                    // newPrompts.push(newPrompt)
+                    // storeObjectInLocalStorage("prompts",newPrompts)
+                    // setPrompts(loadObjectFromLocalStorage("prompts"))
+                    // toast({
+                    //   title: "✅ Greate!",
+                    //   description: `the prompt name edited successfully.`,
+                    // });
+                    // setTimeout(()=>{
+                    //   setSelectedPrompt(null)
+                    // },300)
+                  }}
+                />)}
+
             </ResizablePanel>
           </ResizablePanelGroup>
         </div>

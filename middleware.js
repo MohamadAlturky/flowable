@@ -15,7 +15,14 @@ export function middleware(request) {
     
   // // Check if the accessToken is null or undefined
   if (!accessToken) {
-    return NextResponse.redirect(new URL('/auth/login', request.url));
+    // console.log(request.url);
+    console.log(request);
+
+    const url = new URL(`/auth/login`, request.url);
+    url.searchParams.set("callbackUrl", request.nextUrl.pathname||"/");
+    return NextResponse.redirect(url);
+
+    // return NextResponse.redirect(new URL('/auth/login', request.url));
   }
 
   // Continue to the next middleware or the requested page
@@ -29,6 +36,7 @@ export const config = {
     Exclude paths like '/auth/login' and '/auth/register'
     by including all paths except these specific ones.
     */
-    '/((?!auth/login|auth/register|_next/static|favicon.ico).*)',
+    '/((?!auth/login|auth/register|_next/static|favicon.ico|icon.png).*)',
   ],
 };
+

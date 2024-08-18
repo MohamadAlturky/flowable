@@ -11,12 +11,15 @@ import { useRouter } from 'next/navigation'
 import Swal from 'sweetalert2'
 import {setAuthTokens,getAuthTokens} from "../../../services/auth/AuthServices"
 
-export default function Form() {
+export default function Form(query) {
   // const cookieStore = useCookies();
-
+  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter()
+  console.log(query);
+  const callbackUrl = (query?.searchParams?.callbackUrl) ?? "/";
+  console.log(callbackUrl)
   // Validate email format
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -72,7 +75,6 @@ export default function Form() {
       });
       return;
     }
-
     const axiosInstance = axios.create();
     const data = {
       "email": email,
@@ -104,8 +106,8 @@ export default function Form() {
         });
         
         setTimeout(() => {
-          router.push('/')
-        }, 1300)
+          router.push(callbackUrl)
+        }, 500)
       }).catch(err => {
         console.log(err)
         let error = `email or password isn't correct`
@@ -184,3 +186,10 @@ export default function Form() {
     </div>
   )
 }
+
+
+
+
+
+
+

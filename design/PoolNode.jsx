@@ -32,8 +32,8 @@ function PoolNode({ id, data, selected }) {
   const reactFlow = useReactFlow()
   return (
     <>
-      <ContextMenu>
-        <ContextMenuTrigger >
+      {/* <ContextMenu>
+        <ContextMenuTrigger > */}
           <NodeResizer minWidth={500} isVisible={selected} minHeight={200} />
           {/* <div
             style={{
@@ -75,17 +75,13 @@ function PoolNode({ id, data, selected }) {
             </div>
           {/* </div> */}
        
-        </ContextMenuTrigger>
+        {/* </ContextMenuTrigger>
         <ContextMenuContent className="w-64">
           <ContextMenuItem inset onClick={(e) => { setModalOpen(true) }}>
             Remove
             <ContextMenuShortcut>⌘</ContextMenuShortcut>
           </ContextMenuItem>
-          {/* <ContextMenuItem inset
-            onClick={(e) => { setLaneModalOpen(true) }}>
-            Insert Lane
-            <ContextMenuShortcut>⌘</ContextMenuShortcut>
-          </ContextMenuItem> */}
+    
 
           <ContextMenuSeparator />
 
@@ -94,7 +90,7 @@ function PoolNode({ id, data, selected }) {
             Edit</ContextMenuCheckboxItem>
 
         </ContextMenuContent>
-      </ContextMenu>
+      </ContextMenu> */}
       <AreYouSureToDelete
         isOpen={modalOpen}
         setIsOpen={setModalOpen}
