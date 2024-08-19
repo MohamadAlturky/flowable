@@ -33,6 +33,7 @@ export default function InsertValueAreaModal({ isOpen, setIsOpen, setValueName, 
         }
       }
     },0)
+    setValue(defaultValue)
   }, [isOpen]);
   return (
     <Drawer open={isOpen} onClose={() => {

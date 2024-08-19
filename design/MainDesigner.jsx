@@ -1,7 +1,10 @@
 "use client";
 import { PuffLoader } from "react-spinners";
 import { buildTree, calculateDimensions, adjustNodesPositions, addIdToNodes, addIdToTransitions, flattenTree, updateParentIds, ADJUST } from '../services/adjustment/adjust';
+import generatePDF from "../services/pdf/generate"
 import "./contextMenu.css"
+import CustomViewer from "../components/pdfViewer"
+import Button from '../components/ui/button'
 import {
   ContextMenu,
   ContextMenuCheckboxItem,
@@ -232,8 +235,12 @@ const MainDesigner = () => {
   // 
   const { toast } = useToast();
   const [process, setProcess] = useState("");
+  const [newProcess, setNewProcess] = useState("");
   const [poolModalOpen, setPoolModalOpen] = useState(false);
+  const [discussion, setDiscussion] = useState([]);
+  const [discussionOpen, setDiscussionOpen] = useState(false);
   const [reportModalOpen, setReportModalOpen] = useState(false);
+  const [changeProcess, setChangeProcess] = useState(false);
   const [gatewaysReportModalOpen, setGatewaysReportModalOpen] = useState(false);
   const [poolsReportModalOpen, setPoolsReportModalOpen] = useState(false);
   const [tasksReportModalOpen, setTasksReportModalOpen] = useState(false);
@@ -499,6 +506,111 @@ const MainDesigner = () => {
         setIsGenerating(false)
       });
   }
+
+  // 
+// 
+// 
+// 
+// 
+const rephrase = () => {
+  if (process == "") {
+    toast({
+      title: "❌ Error!",
+      description: `fill the process description please`,
+    });
+    return;
+  }
+  setIsGenerating(true);
+  toast({
+    title: "Greate!",
+    description: `Spelling Checker is working please wait....`,
+  });
+  const axiosInstance = axios.create();
+  const data = {
+    "process_description": process,
+  }
+  axiosInstance.post(apiUrl.aiUrl + "/rephrasing/generate", data)
+    .then(async (res) => {
+      console.log(res);
+      setNewProcess(res.data.process_description)
+      setChangeProcess(true)
+      toast({
+        title: "✅ Greate!",
+        description: `the report generated successfully.`,
+      });
+    }).catch(err => {
+      console.log(err)
+      // setChangeProcess(true)
+      toast({
+        title: "❌ Error!",
+        description: `error occured sorry!`,
+      });
+    }).finally(() => {
+      setIsGenerating(false)
+    });
+}
+
+
+  // 
+  // 
+  // 
+  // 
+ // 
+
+
+ 
+// 
+// 
+// 
+// 
+const generateDiscussion = () => {
+  if (process == "") {
+    toast({
+      title: "❌ Error!",
+      description: `fill the process description please`,
+    });
+    return;
+  }
+  setIsGenerating(true);
+  toast({
+    title: "Greate!",
+    description: `Two BPMN Experts is working please wait....`,
+  });
+  const axiosInstance = axios.create();
+  const data = {
+    "process_description": process,
+    "number_of_iterations":2,
+    "addtional_user_ifo":""
+  }
+  axiosInstance.post(apiUrl.aiUrl + "/collaboration/generate_report_with_two", data)
+    .then(async (res) => {
+      console.log(res);
+      // generatePDF(res.data.history.messages)
+      setDiscussion(res.data.report.messages)
+      setDiscussionOpen(true)
+      toast({
+        title: "✅ Greate!",
+        description: `the report generated successfully.`,
+      });
+    }).catch(err => {
+      console.log(err)
+      // setChangeProcess(true)
+      toast({
+        title: "❌ Error!",
+        description: `error occured sorry!`,
+      });
+    }).finally(() => {
+      setIsGenerating(false)
+    });
+}
+
+
+  // 
+  // 
+  // 
+  // 
+
+
   const generateWithGroqCollaboration = () => {
     if (process == "") {
       toast({
@@ -538,285 +650,7 @@ const MainDesigner = () => {
         setIsGenerating(false)
       });
   }
-  const generate = () => {
-    if (process == "") {
-      toast({
-        title: "❌ Error!",
-        description: `fill the process description please`,
-      });
-      return;
-    }
-    setIsGenerating(true);
-    toast({
-      title: "Greate!",
-      description: `we are working on generating the diagram`,
-    });
-    const axiosInstance = axios.create();
-    const data = {
-      "process_description": process
-    }
-    let res = {
-      "report": {
-        "gateways_report": {
-          "content": [
-            {
-              "name": "Exclusive Gateway (XOR Gate)",
-              "type": "Exclusive",
-              "description": "User selects between multiple options for a free reward after selecting items to purchase",
-              "inputs": [
-                {
-                  "name": "User has selected items",
-                  "description": "User has selected the items they want to purchase"
-                }
-              ],
-              "outputs": [
-                {
-                  "name": "Free reward is selected and awarded",
-                  "description": "The user selects a free reward and it is awarded"
-                },
-                {
-                  "name": "No free reward is selected (default path)",
-                  "description": "The user does not select a free reward, so the process continues with the default path"
-                }
-              ]
-            },
-            {
-              "name": "Parallel Gateway (AND Gate)",
-              "type": "Parallel",
-              "description": "User simultaneously selects items to purchase and sets a payment method",
-              "inputs": [
-                {
-                  "name": "User has started an order by logging in",
-                  "description": "The user logs in and starts the ordering process"
-                }
-              ],
-              "outputs": [
-                {
-                  "name": "Items are selected",
-                  "description": "The user selects the items they want to purchase"
-                },
-                {
-                  "name": "Payment method is set",
-                  "description": "The user sets their payment method for the order"
-                }
-              ]
-            },
-            {
-              "name": "Inclusive Gateway (OR Gate)",
-              "type": "Inclusive",
-              "description": "User either pays or completes an installment agreement after setting a payment method",
-              "inputs": [
-                {
-                  "name": "User has set a payment method",
-                  "description": "The user has set their payment method for the order"
-                }
-              ],
-              "outputs": [
-                {
-                  "name": "Payment is completed",
-                  "description": "The user pays for the order and it is completed"
-                },
-                {
-                  "name": "Installment agreement is completed",
-                  "description": "The user completes an installment agreement and the process continues"
-                }
-              ]
-            },
-            {
-              "name": "Inclusive Gateway (OR Gate) - Duplicate",
-              "type": "Inclusive",
-              "description": "User either pays or completes an installment agreement after setting a payment method (duplicate)",
-              "inputs": [
-                {
-                  "name": "User has set a payment method",
-                  "description": "The user has set their payment method for the order"
-                }
-              ],
-              "outputs": [
-                {
-                  "name": "Payment is completed",
-                  "description": "The user pays for the order and it is completed"
-                },
-                {
-                  "name": "Installment agreement is completed",
-                  "description": "The user completes an installment agreement and the process continues"
-                }
-              ]
-            }
-          ]
-        },
-        "tasks_report": {
-          "content": [
-            {
-              "name": "Login",
-              "type": "User Task",
-              "description": "User logs in to their account."
-            },
-            {
-              "name": "Select Items",
-              "type": "Service Task",
-              "description": "User selects items to purchase from the online shop."
-            },
-            {
-              "name": "Set Payment Method",
-              "type": "Service Task",
-              "description": "User sets a payment method for the purchase."
-            },
-            {
-              "name": "Pay or Installment Agreement",
-              "type": "User Task",
-              "description": "User chooses to either pay or complete an installment agreement."
-            },
-            {
-              "name": "Choose Reward Option",
-              "type": "Service Task",
-              "description": "User selects from multiple options for a free reward, independent of payment activities."
-            },
-            {
-              "name": "Deliver Items",
-              "type": "Service Task",
-              "description": "The items are delivered to the user."
-            },
-            {
-              "name": "Return Items for Exchange",
-              "type": "User Task",
-              "description": "User has the right to return items and receive a new delivery."
-            },
-            {
-              "name": "New Delivery",
-              "type": "Service Task",
-              "description": "A new delivery is made after item returns."
-            }
-          ]
-        },
-        "poolsLanes_report": {
-          "content": [
-            {
-              "name": "User (Customer)",
-              "description": "Pool for user customer",
-              "lanes": [
-                {
-                  "name": "Order Management",
-                  "description": "Lane for managing orders"
-                },
-                {
-                  "name": "Reward Program",
-                  "description": "Lane for reward program independent of payment activities"
-                }
-              ]
-            },
-            {
-              "name": "Online Shop (Vendor)",
-              "description": "Pool for online shop vendor",
-              "lanes": [
-                {
-                  "name": "Order Fulfillment",
-                  "description": "Lane for fulfilling orders"
-                }
-              ]
-            }
-          ]
-        },
-        "events_report": {
-          "content": [
-            {
-              "name": "User Logs In",
-              "type": "Start Event",
-              "description": "The user initiates the order by logging into their account, marking the beginning of the process."
-            },
-            {
-              "name": "Order Placed",
-              "type": "Intermediate Event",
-              "description": "The user has selected items to purchase and set a payment method, marking a specific moment in the process."
-            },
-            {
-              "name": "Payment Received/Installment Agreement Completed",
-              "type": "Intermediate Event",
-              "description": "The user completes either the payment or an installment agreement, indicating progress in the process."
-            },
-            {
-              "name": "Reward Option Selected",
-              "type": "Intermediate Event",
-              "description": "The user chooses between multiple options for a free reward, marking another specific moment in the process."
-            },
-            {
-              "name": "Items Delivered",
-              "type": "Intermediate Event",
-              "description": "The items are delivered to the user, indicating completion of one stage in the process."
-            },
-            {
-              "name": "Return Requested/Exchange",
-              "type": "Intermediate Event",
-              "description": "The user requests a return or exchange of items, marking another specific moment in the process."
-            },
-            {
-              "name": "Delivery Made",
-              "type": "End Event",
-              "description": "A new delivery is made every time items are returned, indicating completion of the final stage in the process."
-            }
-          ]
-        }
-      },
-      "connections": [],
-      "annotations": []
-    }
-    setReport(res.report)
-    const data2 = {
-      annotations: res.annotations,
-      connections: res.connections
-    }
-    // console.log(data2);
-
-    const result = buildNodesAndEdges(data2, res.report.poolsLanes_report.content, setNodes, getId)
-    setNodes(result.arr);
-    setEdges(() => result.connections)
-
-    toast({
-      title: "✅ Greate!",
-      description: `the report generated successfully.`,
-    });
-    setIsGenerating(false)
-    // axiosInstance.post(apiUrl.baseUrl + "/generate/direct_with_report", data)
-    //   .then(res => {
-    //     console.log("res.data");
-    //     console.log("res.data");
-    //     console.log("res.data");
-    //     console.log("res.data");
-    //     console.log("res.data");
-    //     console.log("res.data");
-    //     console.log("res.data");
-    //     console.log(res.data);
-    //     setReport(res.data.report)
-    //     const data = {
-    //       annotations:res.data.annotations,
-    //       connections:res.data.connections
-    //     }
-    //     console.log(data);
-
-    //     // console.log("res.data.connections");
-    //     // console.log(res.data.connections);
-    //     // console.log("res.data.annotations");
-    //     // console.log(res.data.annotations);
-    //     const result = buildNodesAndEdges(data)
-    //     console.log(result);
-    //     setNodes(result.arr);
-    //     setEdges(() => result.connections)
-
-    //     toast({
-    //       title: "✅ Greate!",
-    //       description: `the report generated successfully.`,
-    //     });
-    //   }).catch(err => {
-    //     console.log(err)
-    //     // console.log(err.toJSON())
-    //     toast({
-    //       title: "❌ Error!",
-    //       description: `error occured sorry!`,
-    //     });
-    //   }).finally(() => {
-    //     setIsGenerating(false)
-    //   });
-  }
+ 
   /////
   const onNodeDoubleClick = async (_, node) => {
     // let _newNodes = await HandleDoubleClick(node, nodes);
@@ -826,6 +660,27 @@ const MainDesigner = () => {
     console.log(node);
   };
   return (
+    <>
+    {discussionOpen?<>
+      <CustomViewer process_description={process} messages={discussion}></CustomViewer>
+      {/* <Button>Close PDF Viewer</Button> */}
+      <button style={{color:"white",backgroundColor:"#4f4f4f",
+        paddingLeft:"5px",
+        paddingRight:"5px",
+        paddingTop:"2px",
+        paddingBottom:"2px",
+        }}
+        onClick={()=>{
+          setDiscussionOpen(false)
+        }}
+        >Close PDF Viewer</button>
+      <span style={{
+        paddingLeft:"10px",
+        fontWeight:"bold"
+      }}>You Can Download The PDF Using The Browser Download Icon.</span>
+    </>:<>
+    
+    
     <>
       {isGenerating && (
         <div style={{
@@ -856,6 +711,24 @@ const MainDesigner = () => {
             label={"Edit"}
             supTitle={"edit the process content."}
             title={"Process Description"}
+            setValueName={async (v) => {
+              if (v != process) {
+                setProcess(v)
+                toast({
+                  title: "✅ Greate!",
+                  description: `the process content edited successfully.`,
+                });
+              }
+            }}
+          />
+          <InsertValueAreaModal
+            placeholder={"write here.."}
+            isOpen={changeProcess}
+            defaultValue={newProcess}
+            setIsOpen={setChangeProcess}
+            label={"Edit"}
+            supTitle={"edit the process content."}
+            title={"Edited Process Description By The Spelling Checker"}
             setValueName={async (v) => {
               if (v != process) {
                 setProcess(v)
@@ -948,6 +821,16 @@ const MainDesigner = () => {
                         Process Description
                         <ContextMenuShortcut>⌘</ContextMenuShortcut>
                       </ContextMenuItem>
+                      {/* <ContextMenuSeparator /> */}
+                      <ContextMenuItem
+                        inset
+                        onClick={(e) => {
+                          rephrase()
+                        }}
+                      >
+                        Spelling Checker
+                        <ContextMenuShortcut>⌘</ContextMenuShortcut>
+                      </ContextMenuItem>
                       <ContextMenuSeparator />
 
                       {/* <ContextMenuItem inset
@@ -966,10 +849,10 @@ const MainDesigner = () => {
                           generateWithGroq()
                         }}
                       >
-                        Generate with Groq
+                        Generate BPMN
                         <ContextMenuShortcut>⌘</ContextMenuShortcut>
                       </ContextMenuItem>
-                      <ContextMenuItem inset
+                      {/* <ContextMenuItem inset
 
                         onClick={(e) => {
                           generateWithGroqCollaboration()
@@ -977,13 +860,12 @@ const MainDesigner = () => {
                       >
                         Generate with Collaboration
                         <ContextMenuShortcut>⌘</ContextMenuShortcut>
-                      </ContextMenuItem>
+                      </ContextMenuItem> */}
                       <ContextMenuSub>
                         <ContextMenuSubTrigger inset>Reports</ContextMenuSubTrigger>
                         <ContextMenuSubContent className="w-48">
-                          <ContextMenuItem onClick={() => {
+                          {/* <ContextMenuItem onClick={() => {
                             if (report) {
-
                               setReportModalOpen(true)
                             }
                             else {
@@ -1024,20 +906,11 @@ const MainDesigner = () => {
                             }
                           }}>
                             Tasks
-                          </ContextMenuItem>
+                          </ContextMenuItem> */}
                           <ContextMenuItem onClick={() => {
-                            if (report) {
-
-                              setGatewaysReportModalOpen(true)
-                            }
-                            else {
-                              toast({
-                                title: "❌ Uh oh!",
-                                description: `you have to generate the reports.`,
-                              });
-                            }
+                            generateDiscussion()
                           }}>
-                            Gateways
+                            Generate Discussion
                           </ContextMenuItem>
                           {/* <ContextMenuSeparator />/ */}
                           {/* <ContextMenuItem  onClick={() => { */}
@@ -1207,6 +1080,10 @@ const MainDesigner = () => {
         </div>
       </ReactFlowProvider>
     </>
+    </>}    
+
+    </>
+
   );
 };
 
