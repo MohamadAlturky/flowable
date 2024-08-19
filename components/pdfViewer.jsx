@@ -1,7 +1,10 @@
 "use client"
 import React from 'react';
-import {PDFViewer,Image, Document, Page, Text, View, StyleSheet,Font } from '@react-pdf/renderer';
-
+import { PDFViewer, Image, Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+// Font.register({
+//   family: 'Oswald',
+//   src: '/Y_TKV6o8WovbUd3m_X9aAA.ttf'
+// });
 const styles = StyleSheet.create({
   body: {
     paddingTop: 35,
@@ -11,7 +14,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     textAlign: 'center',
-    fontFamily: 'Oswald'
+    // fontFamily: 'Oswald'
   },
   author: {
     fontSize: 12,
@@ -21,7 +24,13 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 18,
     margin: 12,
-    fontFamily: 'Oswald'
+    // fontFamily: 'Oswald'
+  },
+  subsubtitle: {
+    fontSize: 15,
+    margin: 12,
+    // fontFamily: 'cursive',
+    textDecoration: "underline"
   },
   text: {
     margin: 12,
@@ -49,12 +58,18 @@ const styles = StyleSheet.create({
     color: 'grey',
   },
 });
-Font.register({
-  family: 'Oswald',
-  src: 'https://fonts.gstatic.com/s/oswald/v13/Y_TKV6o8WovbUd3m_X9aAA.ttf'
-});
 
-const Quixote = ({messages,process_description}) => (
+function parseText(text) {
+  const parts = text.split(/(\*\*.*?\*\*)/); // Split by the **bold** markers
+  return parts.map((part, index) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return { bold: true, text: part.slice(2, -2), key: index };
+    }
+    return { bold: false, text: part, key: index };
+  });
+}
+
+const Quixote = ({ messages, process_description }) => (
   <Document>
     <Page style={styles.body}>
       <Text style={styles.header} fixed>
@@ -66,6 +81,9 @@ const Quixote = ({messages,process_description}) => (
         style={styles.image}
         src="/pexels-divinetechygirl-1181715.jpg"
       />
+      <Text style={styles.header} >
+        This Discussion will help you see the power of our AI in BPMN.
+      </Text>
       <Text style={styles.subtitle}>
         Process Description
       </Text>
@@ -81,7 +99,22 @@ const Quixote = ({messages,process_description}) => (
           <Text style={styles.subtitle}>
             {index % 2 === 0 ? 'First Expert' : 'Second Expert'}
           </Text>
-          <Text style={styles.text}>{message.content}</Text>
+          <Text style={styles.text}>
+
+            {parseText(message.content).map(part =>
+              part.bold ? (
+                <Text style={styles.subsubtitle}>
+                  {part.text}
+                </Text>
+              ) : (
+                <Text style={styles.text}>
+                  {part.text}
+                </Text>
+
+              )
+            )}
+
+          </Text>
         </View>
       ))}
       <Text style={styles.pageNumber} render={({ pageNumber, totalPages }) => (
@@ -92,10 +125,10 @@ const Quixote = ({messages,process_description}) => (
 );
 
 
-const CustomViewer = ({messages, process_description}) => {
+const CustomViewer = ({ messages, process_description }) => {
   return (
     <PDFViewer width="100%" height="720px">
-      <Quixote messages={messages} process_description = {process_description}/>
+      <Quixote messages={messages} process_description={process_description} />
     </PDFViewer>
   );
 };
