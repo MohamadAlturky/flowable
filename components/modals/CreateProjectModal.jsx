@@ -200,8 +200,8 @@ export default function CreateProjectModal({ isOpen, setIsOpen }) {
                       <SelectValue placeholder="Select the type of the project." />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="1">Private</SelectItem>
-                      <SelectItem value="2">Public</SelectItem>
+                      <SelectItem value="1">Public</SelectItem>
+                      <SelectItem value="2">Private</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
