@@ -1,0 +1,24 @@
+.file-input-container {
+  display: flex;
+  align-items: center;
+}
+
+.custom-file-button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.custom-file-button:hover {
+  background-color: #45a049;
+}
+
+.file-name {
+  font-size: 14px;
+  color: #555;
+}
