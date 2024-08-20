@@ -204,7 +204,7 @@ export default function Project({ id }) {
                                 <Card className={cn("w-full rounded-none")} style={{
                                     height: "700px"
                                 }}>
-                                    <ProjectVisualization />
+                                    <ProjectVisualization id={id} />
                                 </Card>
                             }
                                 title={"d"}

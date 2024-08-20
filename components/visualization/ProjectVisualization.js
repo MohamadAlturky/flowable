@@ -1,5 +1,5 @@
 "use client"
-import { useRef, useState } from 'react';
+import { useRef, useState,useEffect } from 'react';
 import { FitViewIcon } from "./Icons/FitView";
 
 import {
@@ -36,15 +36,6 @@ import '@xyflow/react/dist/style.css';
 
 import './index.css';
 
-// const initialNodes = [
-//     // {
-//     //     id: '0',
-//     //     type: 'input',
-//     //     data: { label: 'Process' },
-//     //     position: { x: 0, y: 50 },
-//     // },
-// ];
-// const  initialEdges=[]
 const position = { x: 0, y: 0 };
 
 export const initialNodes = [
@@ -124,17 +115,13 @@ export const initialEdges = [
     { id: 'e56', source: '5', target: '6', type: 'smoothstep' },
     { id: 'e57', source: '5', target: '7', type: 'smoothstep' },
 ];
-
+import { axiosInstance } from "../../contexts/api"
+import { getAuthTokens } from "../../services/auth/AuthServices"
 import ELK from 'elkjs/lib/elk.bundled.js';
 import React, { useCallback, useLayoutEffect } from 'react';
 
 const elk = new ELK();
 
-// Elk has a *huge* amount of options to configure. To see everything you can
-// tweak check out:
-//
-// - https://www.eclipse.org/elk/reference/algorithms.html
-// - https://www.eclipse.org/elk/reference/options.html
 const elkOptions = {
     'elk.algorithm': 'layered',
     'elk.layered.spacing.nodeNodeBetweenLayers': '100',
@@ -148,12 +135,9 @@ const getLayoutedElements = (nodes, edges, options = {}) => {
         layoutOptions: options,
         children: nodes.map((node) => ({
             ...node,
-            // Adjust the target and source handle positions based on the layout
-            // direction.
             targetPosition: isHorizontal ? 'left' : 'top',
             sourcePosition: isHorizontal ? 'right' : 'bottom',
 
-            // Hardcode a width and height for elk to use when layouting.
             width: 150,
             height: 50,
         })),
@@ -165,8 +149,7 @@ const getLayoutedElements = (nodes, edges, options = {}) => {
         .then((layoutedGraph) => ({
             nodes: layoutedGraph.children.map((node) => ({
                 ...node,
-                // React Flow expects a position property on the node instead of `x`
-                // and `y` fields.
+
                 position: { x: node.x, y: node.y },
             })),
 
@@ -175,29 +158,16 @@ const getLayoutedElements = (nodes, edges, options = {}) => {
         .catch(console.error);
 };
 
-const AddNodeOnEdgeDrop = () => {
+const AddNodeOnEdgeDrop = ({id}) => {
     const reactFlowWrapper = useRef(null);
     const connectingNodeId = useRef(null);
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
     const { screenToFlowPosition } = useReactFlow();
-    // const onConnect = useCallback((params) => {
-    //     // reset the start node on connections
-    //     connectingNodeId.current = null;
-    //     setEdges((eds) => addEdge(params, eds));
-    // }, []);
 
     const [reactFlowInstance, setReactFlowInstance] = useState();
     const onInit = (rfi) => setReactFlowInstance(rfi);
 
-    // const { fitView } = useReactFlow();
-
-
-
-    // const onConnect = useCallback(
-    //     (params) => setEdges((eds) => addEdge(params, eds)),
-    //     [],
-    // );
     const onLayout = useCallback(
         ({ direction, useInitialNodes = false }) => {
             const opts = { 'elk.direction': direction, ...elkOptions };
@@ -227,55 +197,73 @@ const AddNodeOnEdgeDrop = () => {
         [nodes, edges],
     );
 
-    // Calculate the initial layout on mount.
+    
     useLayoutEffect(() => {
         onLayout({ direction: 'DOWN', useInitialNodes: true });
     }, []);
 
     // 
+    useEffect(() => {
+        const fetchActivities = async () => {
+          try {
+            const payload = {
+              "filter": {
+                "paginatedRequest": {
+                  "pageSize": 5000,
+                  "pageNumber": 1,
+                },
+                "project": id, 
+                "orderByIdDescending": true,
+                "orderByIdAscending": false,
+                "orderByActivityTypeDescending": true,
+                "orderByActivityTypeAscending": false,
+                "orderByActivityResourceTypeDescending": true,
+                "orderByActivityResourceTypeAscending": false,
+                "orderByProjectDescending": true,
+                "orderByProjectAscending": false,
+                "orderByDateDescending": true,
+                "orderByDateAscending": false,
+                "includeProject": true,
+                "includeActivityType": true,
+                "includeActivityResourceType": true,
+                "includeActivityPrecedentPrecedent": true,
+              },
+            };
+            let token = getAuthTokens().accessToken
+
+            const response = await axiosInstance.post('/api/activities/filter', payload,
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    }
+                }
+            );
+            console.log('Response:', response.data);
+          } catch (error) {
+            console.error('Error fetching activities:', error);
+          }
+        };
+    
+        fetchActivities();
+      }, []);
+    
+
+    // 
     return (
         <>
-            {/* <div style={{
-                // zIndex: 10
-            }}> */}
             <ContextMenu>
                 <ContextMenuTrigger>
                     <div className="wrapper" ref={reactFlowWrapper}>
-                        {/* <ReactFlow
-                            nodes={nodes}
-                            edges={edges}
-                            onNodesChange={onNodesChange}
-                            onEdgesChange={onEdgesChange}
-                            onConnect={onConnect}
-                            // onConnectStart={onConnectStart}
-                            // onConnectEnd={onConnectEnd}
-                            fitView
-                            fitViewOptions={{ padding: 2 }}
-                            nodeOrigin={[0.5, 0]}>
-                            <MiniMap zoomable pannable />
-                            <Controls />
-                            <Background variant='lines' />
-                        </ReactFlow> */}
                         <ReactFlow
                             nodes={nodes}
                             edges={edges}
-                            // onConnect={onConnect}
                             onNodesChange={onNodesChange}
                             onEdgesChange={onEdgesChange}
-                            // fitView
                             fitViewOptions={{ padding: 2 }}
                             onInit={onInit}
 
                         >
-                            {/* <Panel position="top-right">
-                                <Button onClick={() => onLayout({ direction: 'DOWN' })}>
-                                    vertical layout
-                                </Button>
-                                <div className='m-3 inline'></div>
-                                <Button onClick={() => onLayout({ direction: 'RIGHT' })}>
-                                    horizontal layout
-                                </Button>
-                            </Panel> */}
                             <Background variant='lines' />
                             <MiniMap zoomable pannable />
 
@@ -311,51 +299,14 @@ const AddNodeOnEdgeDrop = () => {
 
                         <ContextMenuShortcut>⌘</ContextMenuShortcut>
                     </ContextMenuItem>
-                    {/* <ContextMenuItem inset disabled>
-                        Forward
-                        <ContextMenuShortcut>⌘</ContextMenuShortcut>
-                    </ContextMenuItem>
-                    <ContextMenuItem inset>
-                        Reload
-                        <ContextMenuShortcut>⌘R</ContextMenuShortcut>
-                    </ContextMenuItem>
-                    <ContextMenuSub>
-                        <ContextMenuSubTrigger inset>More Tools</ContextMenuSubTrigger>
-                        <ContextMenuSubContent className="w-48">
-                            <ContextMenuItem>
-                                Save Page As...
-                                <ContextMenuShortcut>⇧⌘S</ContextMenuShortcut>
-                            </ContextMenuItem>
-                            <ContextMenuItem>Create Shortcut...</ContextMenuItem>
-                            <ContextMenuItem>Name Window...</ContextMenuItem>
-                            <ContextMenuSeparator />
-                            <ContextMenuItem>Developer Tools</ContextMenuItem>
-                        </ContextMenuSubContent>
-                    </ContextMenuSub>
-                    <ContextMenuSeparator />
-                    <ContextMenuCheckboxItem checked>
-                        Show Bookmarks Bar
-                        <ContextMenuShortcut>⌘⇧B</ContextMenuShortcut>
-                    </ContextMenuCheckboxItem>
-                    <ContextMenuCheckboxItem>Show Full URLs</ContextMenuCheckboxItem>
-                    <ContextMenuSeparator />
-                    <ContextMenuRadioGroup value="pedro">
-                        <ContextMenuLabel inset>People</ContextMenuLabel>
-                        <ContextMenuSeparator />
-                        <ContextMenuRadioItem value="pedro">
-                            Pedro Duarte
-                        </ContextMenuRadioItem>
-                        <ContextMenuRadioItem value="colm">Colm Tuite</ContextMenuRadioItem>
-                    </ContextMenuRadioGroup>*/}
                 </ContextMenuContent>
             </ContextMenu>
-            {/* </div> */}
         </>
     );
 };
 
-export default () => (
+export default ({id}) => (
     <ReactFlowProvider>
-        <AddNodeOnEdgeDrop />
+        <AddNodeOnEdgeDrop id={id}/>
     </ReactFlowProvider>
 );
