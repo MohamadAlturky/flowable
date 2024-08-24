@@ -1,5 +1,5 @@
 "use client"
-import { useRef, useState,useEffect } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { FitViewIcon } from "./Icons/FitView";
 
 import {
@@ -95,17 +95,19 @@ export const initialNodes = [
 ];
 
 export const initialEdges = [
-    { id: 'e12', source: '1', target: '2', type: 'smoothstep',markerEnd: {
-        type: MarkerType.ArrowClosed,
-        width: 20,
-        height: 20,
-        color: '#1976d2',
-      },
-    //   label: 'marker size and color',
-      style: {
-        strokeWidth: 2,
-        stroke: '#1976d2',
-      } },
+    {
+        id: 'e12', source: '1', target: '2', type: 'smoothstep', markerEnd: {
+            type: MarkerType.ArrowClosed,
+            width: 20,
+            height: 20,
+            color: '#1976d2',
+        },
+        //   label: 'marker size and color',
+        style: {
+            strokeWidth: 2,
+            stroke: '#1976d2',
+        }
+    },
     { id: 'e13', source: '1', target: '3', type: 'smoothstep' },
     { id: 'e22a', source: '2', target: '2a', type: 'smoothstep' },
     { id: 'e22b', source: '2', target: '2b', type: 'smoothstep' },
@@ -158,11 +160,11 @@ const getLayoutedElements = (nodes, edges, options = {}) => {
         .catch(console.error);
 };
 
-const AddNodeOnEdgeDrop = ({id}) => {
+const AddNodeOnEdgeDrop = ({ id }) => {
     const reactFlowWrapper = useRef(null);
     const connectingNodeId = useRef(null);
-    const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-    const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+    const [nodes, setNodes, onNodesChange] = useNodesState([]);
+    const [edges, setEdges, onEdgesChange] = useEdgesState([]);
     const { screenToFlowPosition } = useReactFlow();
 
     const [reactFlowInstance, setReactFlowInstance] = useState();
@@ -179,75 +181,108 @@ const AddNodeOnEdgeDrop = ({id}) => {
                     setNodes(layoutedNodes);
                     setEdges(layoutedEdges);
 
-                    window.requestAnimationFrame(() => {
-                        try{
-                            reactFlowInstance.fitView({
-                                duration: 1200,
-                                padding: 0.3,
-                            })
-                        }
-                        catch(e){
-                            console.log(e);
-                            
-                        }
-                    });
+                    // window.requestAnimationFrame(() => {
+                    //     try {
+                    //         reactFlowInstance.fitView({
+                    //             duration: 1200,
+                    //             padding: 0.3,
+                    //         })
+                    //     }
+                    //     catch (e) {
+                    //         console.log(e);
+
+                    //     }
+                    // });
                 },
             );
         },
         [nodes, edges],
     );
 
-    
+
     useLayoutEffect(() => {
-        onLayout({ direction: 'DOWN', useInitialNodes: true });
+        onLayout({ direction: 'DOWN', useInitialNodes: false });
     }, []);
 
     // 
-    useEffect(() => {
-        const fetchActivities = async () => {
-          try {
-            const payload = {
-              "filter": {
-                "paginatedRequest": {
-                  "pageSize": 5000,
-                  "pageNumber": 1,
-                },
-                "project": id, 
-                "orderByIdDescending": true,
-                "orderByIdAscending": false,
-                "orderByActivityTypeDescending": true,
-                "orderByActivityTypeAscending": false,
-                "orderByActivityResourceTypeDescending": true,
-                "orderByActivityResourceTypeAscending": false,
-                "orderByProjectDescending": true,
-                "orderByProjectAscending": false,
-                "orderByDateDescending": true,
-                "orderByDateAscending": false,
-                "includeProject": true,
-                "includeActivityType": true,
-                "includeActivityResourceType": true,
-                "includeActivityPrecedentPrecedent": true,
-              },
-            };
+
+    const createProjectTask = async (taskData) => {
+        try {
             let token = getAuthTokens().accessToken
 
-            const response = await axiosInstance.post('/api/activities/filter', payload,
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
+            const response = await axiosInstance.post('/api/project-tasks', taskData, {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            console.log('Task created successfully:', response.data);
+            return response.data; // Return the created task data
+        } catch (error) {
+            console.error('Error creating project task:', error);
+            throw error; // Rethrow the error for further handling if needed
+        }
+    };
+
+    useEffect(() => {
+        const fetchActivities = async () => {
+            try {
+                const payload = {
+                    "filter": {
+                        "paginatedRequest": {
+                            "pageSize": 5000,
+                            "pageNumber": 1,
+                        },
+                        "project": id,
+                        "orderByIdDescending": true,
+                        "orderByIdAscending": false,
+                        "orderByActivityTypeDescending": true,
+                        "orderByActivityTypeAscending": false,
+                        "orderByActivityResourceTypeDescending": true,
+                        "orderByActivityResourceTypeAscending": false,
+                        "orderByProjectDescending": true,
+                        "orderByProjectAscending": false,
+                        "orderByDateDescending": true,
+                        "orderByDateAscending": false,
+                        "includeProject": true,
+                        "includeActivityType": true,
+                        "includeActivityResourceType": true,
+                        "includeActivityPrecedentPrecedent": true,
+                    },
+                };
+                let token = getAuthTokens().accessToken
+
+                const response = await axiosInstance.post('/api/activities/filter', payload,
+                    {
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}`,
+                        }
                     }
+                );
+                console.log('Response:', response.data);
+                let NewNodes = []
+                for (let i = 0; i < response.data.items.length; i++) {
+                    let item = response.data.items[i]
+                    console.log('item:', response.data.items[i]);
+                    NewNodes.push({
+                        id: `project-${item.id}`,
+                        type: 'default',
+                        data: { label: item.name },
+                        position: { x: 250, y: 5 }
+                    })
                 }
-            );
-            console.log('Response:', response.data);
-          } catch (error) {
-            console.error('Error fetching activities:', error);
-          }
+                console.log(NewNodes);
+                setNodes(NewNodes)
+            } catch (error) {
+                console.error('Error fetching activities:', error);
+            }
         };
-    
+
         fetchActivities();
-      }, []);
-    
+    }, []);
+
 
     // 
     return (
@@ -284,7 +319,21 @@ const AddNodeOnEdgeDrop = ({id}) => {
 
                 </ContextMenuTrigger>
                 <ContextMenuContent className="z-10000 w-64">
-                    <ContextMenuItem inset>
+                    <ContextMenuItem inset
+                    onClick={()=>{
+                        const newTask = {
+                            Name: "New Task",
+                            Description: "This is a description for the new task.",
+                            Project: id, 
+                            TaskStatus: 1,
+                            BasedOn : []
+                          };
+                          
+                          createProjectTask(newTask)
+                            .then(data => console.log('Created Task:', data))
+                            .catch(err => console.error('Failed to create task:', err));
+                    }}
+                    >
                         New Diagram
                         <ContextMenuShortcut>⌘</ContextMenuShortcut>
                     </ContextMenuItem>
@@ -305,8 +354,8 @@ const AddNodeOnEdgeDrop = ({id}) => {
     );
 };
 
-export default ({id}) => (
+export default ({ id }) => (
     <ReactFlowProvider>
-        <AddNodeOnEdgeDrop id={id}/>
+        <AddNodeOnEdgeDrop id={id} />
     </ReactFlowProvider>
 );
