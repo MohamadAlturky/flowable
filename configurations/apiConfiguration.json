@@ -1,5 +1,5 @@
 {
     "baseUrl": "http://172.29.3.8:8090",
     "projectsUrl": "http://172.29.3.8:8090/ProjectManagement",
-    "aiUrl":"http://172.29.3.8:8055"
+    "aiUrl":"http://172.29.3.8:8090/generate"
 }
