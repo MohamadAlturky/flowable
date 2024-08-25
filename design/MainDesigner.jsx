@@ -95,6 +95,8 @@ const nodeTypes = {
   ServiceTask: ServiceTask,
   ManualTask: ManualTask
 };
+import { getAuthTokens } from "../services/auth/AuthServices"
+
 import InterEventBuilder from "../services/DragAndDrop/InterEventBuilder";
 import EndEventBuilder from "../services/DragAndDrop/EndEventBuilder";
 import StartEventBuilder from "../services/DragAndDrop/StartEventBuilder";
@@ -413,10 +415,19 @@ const MainDesigner = () => {
       "notes": "",
       "report": ""
     }
-    axiosInstance.post(apiUrl.aiUrl + "/bpmn/generateV5", data)
+    let token = getAuthTokens().accessToken
+
+    axiosInstance.post(apiUrl.aiUrl + "/bpmn/generateV5", data,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        }
+      })
       .then(async (res) => {
         console.log("res.data.nodes");
         console.log("-------------------------------------------------");
+        console.log(res.data);
         // console.log(res.data.nodes);
         // console.log(res.data.edges);
         let newNodes = addIdToNodes(res.data.nodes)
@@ -479,13 +490,57 @@ const MainDesigner = () => {
           }
         })
         console.log(pools);
-
+        console.log("layoutedNodes",layoutedNodes);
+        
         let NlayoutedNodes = []
         // pools.forEach((e) => NlayoutedNodes.push(e))
         let layoutedEdges = layouted.edges
         layoutedNodes.forEach((e) => e.position.x += 50)
-        layoutedNodes.forEach((e) => NlayoutedNodes.push(e))
+        // layoutedNodes.forEach((e) => NlayoutedNodes.push(e))
+        layoutedNodes.forEach((e) => {
 
+          let backgroundC = "#8e00ff"
+          if (e.parentId == null) {
+            if(e.type!= "pool")
+            {
+              NlayoutedNodes.push(
+                {
+                  id: e.id,
+                  name: e.name,
+                  position: e.position,
+                  data: {
+                    label: e.data.label,
+                  },
+                  type:e.type,
+                  // parentId:e.parentId,
+                  // style: { ...e.style},
+                  // targetPosition: e.targetPosition,
+                  // sourcePosition: e.sourcePosition,
+                }
+              ) 
+            }
+          }
+          else {
+            console.log(e);
+            
+            console.log(newNodes.filter(f => f.id == e.parentId)[0]);
+            NlayoutedNodes.push(
+              {
+                id: e.id,
+                name: e.name,
+                position: e.position,
+                data: {
+                  label: e.data.label + ", the actor is " + newNodes.filter(f => f.id == e.parentId)[0].name,
+                },
+                type:e.type,
+                // parentId:e.parentId,
+                // style: { ...e.style},
+                // targetPosition: e.targetPosition,
+                // sourcePosition: e.sourcePosition,
+              }
+            ) 
+          }
+        })
         console.log("layouted");
         console.log(NlayoutedNodes);
         console.log("edges");
@@ -515,6 +570,8 @@ const MainDesigner = () => {
   // 
   // 
   const rephrase = () => {
+    console.log(nodes);
+    
     if (process == "") {
       toast({
         title: "❌ Error!",
@@ -528,10 +585,18 @@ const MainDesigner = () => {
       description: `Spelling Checker is working please wait....`,
     });
     const axiosInstance = axios.create();
+    let token = getAuthTokens().accessToken
+
     const data = {
       "process_description": process,
     }
-    axiosInstance.post(apiUrl.aiUrl + "/rephrasing/generate", data)
+    axiosInstance.post(apiUrl.aiUrl + "/rephrasing/generate", data,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        }
+      })
       .then(async (res) => {
         console.log(res);
         setNewProcess(res.data.process_description)
@@ -584,7 +649,15 @@ const MainDesigner = () => {
       "number_of_iterations": 2,
       "addtional_user_ifo": ""
     }
-    axiosInstance.post(apiUrl.aiUrl + "/collaboration/generate_report_with_two", data)
+    let token = getAuthTokens().accessToken
+
+    axiosInstance.post(apiUrl.aiUrl + "/collaboration/generate_report_with_two", data,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        }
+      })
       .then(async (res) => {
         console.log(res);
         // generatePDF(res.data.history.messages)
@@ -614,7 +687,7 @@ const MainDesigner = () => {
 
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
-    fileInputRef.current.value = null; 
+    fileInputRef.current.value = null;
     if (file) {
       try {
         const content = await readFileContent(file);
@@ -661,7 +734,7 @@ const MainDesigner = () => {
   const exportToJson = (e) => {
     e.preventDefault();
     downloadFile({
-      data: JSON.stringify({"nodes":nodes,"edges":edges,"process":process}),
+      data: JSON.stringify({ "nodes": nodes, "edges": edges, "process": process }),
       fileName: 'diagram.donut',
       fileType: 'text/json',
     });
@@ -880,26 +953,26 @@ const MainDesigner = () => {
                               </ContextMenuItem>
 
                             </ContextMenuSubContent>
-                              <ContextMenuSeparator />
-                            {(nodes.length!=0||process!="")&&<>
-                            <ContextMenuItem
-                              inset
-                              onClick={(e) => {
-                                exportToJson(e)
-                              }}
-                            >
-                              Download
-                              <ContextMenuShortcut>⌘</ContextMenuShortcut>
-                            </ContextMenuItem>
-                            
+                            <ContextMenuSeparator />
+                            {(nodes.length != 0 || process != "") && <>
+                              <ContextMenuItem
+                                inset
+                                onClick={(e) => {
+                                  exportToJson(e)
+                                }}
+                              >
+                                Download
+                                <ContextMenuShortcut>⌘</ContextMenuShortcut>
+                              </ContextMenuItem>
+
                             </>}
                             <ContextMenuItem
                               inset
                               onClick={triggerFileInput}
                             >
                               Upload
-                              
-                                
+
+
                               <ContextMenuShortcut>⌘</ContextMenuShortcut>
                             </ContextMenuItem>
                           </ContextMenuSub>
@@ -1067,14 +1140,14 @@ const MainDesigner = () => {
         </>
       </>}
       <input
-          type="file"
-          id="hiddenFileInput"
-          style={{ display: 'none' }}
-          onChange={handleFileChange}
-          accept=".donut"
-          ref={fileInputRef}
+        type="file"
+        id="hiddenFileInput"
+        style={{ display: 'none' }}
+        onChange={handleFileChange}
+        accept=".donut"
+        ref={fileInputRef}
 
-          />
+      />
     </>
 
   );
