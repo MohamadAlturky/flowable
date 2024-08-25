@@ -33,7 +33,8 @@ export default function Landing({children}) {
             Home
           </Link>
           <Link
-            href="#"
+            target="blank"
+            href="https://mohamadalturky.github.io/donut-bpmn_docs/docs/bpmn/intro/"
             className="text-muted-foreground transition-colors hover:text-foreground"
           >
             BPMN
@@ -45,7 +46,8 @@ export default function Landing({children}) {
             Projects
           </Link>
           <Link
-            href="#"
+            target="blank"
+            href="https://mohamadalturky.github.io/donut-bpmn_docs/docs/bpmn/working-started"
             className="text-muted-foreground transition-colors hover:text-foreground"
           >
             Help
