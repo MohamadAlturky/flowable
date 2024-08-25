@@ -36,7 +36,7 @@ export const config = {
     Exclude paths like '/auth/login' and '/auth/register'
     by including all paths except these specific ones.
     */
-    '/((?!auth/login|auth/register|_next/static|favicon.ico|icon.png).*)',
+    '/((?!auth/login|auth/register|.next/static|favicon.ico|icon.png).*)',
   ],
 };
 
