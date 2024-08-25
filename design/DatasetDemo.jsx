@@ -122,7 +122,7 @@ const elk = new ELK();
 
 const elkOptions = {
   'elk.algorithm': 'layered',
-  'elk.layered.spacing.nodeNodeBetweenLayers': '400',
+  'elk.layered.spacing.nodeNodeBetweenLayers': '700',
   'elk.spacing.nodeNode': '500',
 };
 
@@ -531,6 +531,8 @@ const MainDesigner = () => {
         })
         console.log("layouted");
         console.log(NlayoutedNodes);
+        console.log("flow",NlayoutedNodes.filter(e=>e.parentId==NlayoutedNodes.filter(f=>f.name=="flow")[0].id).length)
+        console.log("actor performer",NlayoutedNodes.filter(e=>e.parentId==NlayoutedNodes.filter(f=>f.name=="actor performer")[0].id).length)
         console.log("edges");
         console.log(newEdgesCopy);
         

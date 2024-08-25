@@ -122,8 +122,8 @@ const elk = new ELK();
 
 const elkOptions = {
   'elk.algorithm': 'layered',
-  'elk.layered.spacing.nodeNodeBetweenLayers': '200',
-  'elk.spacing.nodeNode': '400',
+  'elk.layered.spacing.nodeNodeBetweenLayers': '700',
+  'elk.spacing.nodeNode': '500',
 };
 
 function getWidth(type, node) {
