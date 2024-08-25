@@ -9,7 +9,8 @@ const labelStyle = {
   fontWeight:"600",
   transform: "translateX(-50%)",
   left: "50%",
-  width:"fit-content"
+  display:"flex",
+  justifyContent:"center"
   // backgroundColor:"red"
 };
 
@@ -36,7 +37,7 @@ function StartEventNode({ data }) {
           height={90}
         />
       </div>
-      <div style={labelStyle}>{data.label}</div>
+      <div style={{...labelStyle,width:`${(data.label.length*10+50)}px`}}>{data.label}</div>
     </>
   );
 }
