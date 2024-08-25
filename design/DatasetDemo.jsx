@@ -122,8 +122,8 @@ const elk = new ELK();
 
 const elkOptions = {
   'elk.algorithm': 'layered',
-  'elk.layered.spacing.nodeNodeBetweenLayers': '200',
-  'elk.spacing.nodeNode': '400',
+  'elk.layered.spacing.nodeNodeBetweenLayers': '400',
+  'elk.spacing.nodeNode': '500',
 };
 
 function getWidth(type, node) {
@@ -292,6 +292,24 @@ const MainDesigner = () => {
   // 
   // 
   // 
+  function getTypes(nodes) {
+    const dict = {};
+    
+    nodes.forEach(item => {
+      dict[item.type_name] = true;
+    });
+    
+    return dict;
+  }
+  function getConnections(edges) {
+    const dict = {};
+    
+    edges.forEach(item => {
+      dict[item.label] = true;
+    });
+    
+    return dict;
+  }
 
   // D AND D
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -490,28 +508,35 @@ const MainDesigner = () => {
         layoutedNodes.forEach((e) => e.position.x += 50)
 
         layoutedNodes.forEach((e) => {
-
+          let backgroundC = "#8e00ff"
+          if(e.parentId == null)
+          {
+            backgroundC = "green"
+          }
           NlayoutedNodes.push(
             {
               id: e.id,
               name: e.name,
-              type: e.type,
+              type_name:e.type_name,
               position: e.position,
               data: {
                 label: e.data.label + ", with type " + e.type_name,
               },
-              style: { ...e.style, backgroundColor: "#8e00ff", color: "white", fontSize: "11px" },
+              parentId:e.parentId,
+              style: { ...e.style, backgroundColor: backgroundC, color: "white", fontSize: "11px" },
               targetPosition: e.targetPosition,
               sourcePosition: e.sourcePosition,
             }
           )
         })
-
         console.log("layouted");
         console.log(NlayoutedNodes);
         console.log("edges");
         console.log(newEdgesCopy);
-
+        
+        console.log(getConnections(newEdgesCopy));
+        console.log(getTypes(NlayoutedNodes));
+                
         setNodes(NlayoutedNodes);
         setEdges(() => newEdgesCopy)
 
@@ -531,105 +556,9 @@ const MainDesigner = () => {
   }
 
   // 
-  // 
-  // 
-  // 
-  // 
-  const rephrase = () => {
-    if (process == "") {
-      toast({
-        title: "❌ Error!",
-        description: `fill the process description please`,
-      });
-      return;
-    }
-    setIsGenerating(true);
-    toast({
-      title: "Greate!",
-      description: `Spelling Checker is working please wait....`,
-    });
-    const axiosInstance = axios.create();
-    const data = {
-      "process_description": process,
-    }
-    axiosInstance.post(apiUrl.aiUrl + "/rephrasing/generate", data)
-      .then(async (res) => {
-        console.log(res);
-        setNewProcess(res.data.process_description)
-        setChangeProcess(true)
-        toast({
-          title: "✅ Greate!",
-          description: `the report generated successfully.`,
-        });
-      }).catch(err => {
-        console.log(err)
-        // setChangeProcess(true)
-        toast({
-          title: "❌ Error!",
-          description: `error occured sorry!`,
-        });
-      }).finally(() => {
-        setIsGenerating(false)
-      });
-  }
+  
 
 
-  // 
-  // 
-  // 
-  // 
-  // 
-
-
-
-  // 
-  // 
-  // 
-  // 
-  const generateDiscussion = () => {
-    if (process == "") {
-      toast({
-        title: "❌ Error!",
-        description: `fill the process description please`,
-      });
-      return;
-    }
-    setIsGenerating(true);
-    toast({
-      title: "Greate!",
-      description: `Two BPMN Experts is working please wait....`,
-    });
-    const axiosInstance = axios.create();
-    const data = {
-      "process_description": process,
-      "number_of_iterations": 2,
-      "addtional_user_ifo": ""
-    }
-    axiosInstance.post(apiUrl.aiUrl + "/collaboration/generate_report_with_two", data)
-      .then(async (res) => {
-        console.log(res);
-        // generatePDF(res.data.history.messages)
-        setDiscussion(res.data.report.messages)
-        setDiscussionOpen(true)
-        toast({
-          title: "✅ Greate!",
-          description: `the report generated successfully.`,
-        });
-      }).catch(err => {
-        console.log(err)
-        // setChangeProcess(true)
-        toast({
-          title: "❌ Error!",
-          description: `error occured sorry!`,
-        });
-      }).finally(() => {
-        setIsGenerating(false)
-      });
-  }
-
-
-  // 
-  // 
   // 
   // 
 
