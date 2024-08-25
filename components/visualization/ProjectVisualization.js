@@ -121,6 +121,7 @@ import { axiosInstance } from "../../contexts/api"
 import { getAuthTokens } from "../../services/auth/AuthServices"
 import ELK from 'elkjs/lib/elk.bundled.js';
 import React, { useCallback, useLayoutEffect } from 'react';
+import { useToast } from "@/components/ui/use-toast";
 
 const elk = new ELK();
 
@@ -131,6 +132,7 @@ const elkOptions = {
 };
 
 const getLayoutedElements = (nodes, edges, options = {}) => {
+
     const isHorizontal = options?.['elk.direction'] === 'RIGHT';
     const graph = {
         id: 'root',
@@ -159,8 +161,11 @@ const getLayoutedElements = (nodes, edges, options = {}) => {
         }))
         .catch(console.error);
 };
+import Swal from 'sweetalert2'
 
 const AddNodeOnEdgeDrop = ({ id }) => {
+    const { toast } = useToast();
+
     const reactFlowWrapper = useRef(null);
     const connectingNodeId = useRef(null);
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
@@ -209,17 +214,66 @@ const AddNodeOnEdgeDrop = ({ id }) => {
     const createProjectTask = async (taskData) => {
         try {
             let token = getAuthTokens().accessToken
-
-            const response = await axiosInstance.post('/api/project-tasks', taskData, {
+         
+              
+            const response = await axiosInstance.post('/api/activities', taskData, {
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                 },
             });
-
+            // toast({
+            //     title: "✅ Greate!",
+            //     description: `the activity created successfully.`,
+            //   });
             console.log('Task created successfully:', response.data);
-            return response.data; // Return the created task data
+            let NewNodes = nodes.concat({
+                id: `${response.data.id}`,
+                type: 'default',
+                data: { label: taskData.Name },
+                position: { x: 250, y: 5 }
+            })
+            // setNodes(NewNodes)
+            // const Toast = Swal.mixin({
+            //     toast: true,
+            //     position: "top-end",
+            //     width:"450px",
+            //     className:"z-50",
+            //     showConfirmButton: false,
+            //     timer: 1500,
+            //     timerProgressBar: true,
+            //     didOpen: (toast) => {
+            //       toast.onmouseenter = Swal.stopTimer;
+            //       toast.onmouseleave = Swal.resumeTimer;
+            //     }
+            //   });
+            // Toast.fire({
+            //     icon: "info",
+            //     title: "the activity created successfully."
+            //   });
+            return NewNodes; // Return the created task data
         } catch (error) {
+            // const Toast = Swal.mixin({
+            //     toast: true,
+            //     position: "top-end",
+            //     width:"450px",
+            //     className:"z-50",
+            //     showConfirmButton: false,
+            //     timer: 1500,
+            //     timerProgressBar: true,
+            //     didOpen: (toast) => {
+            //       toast.onmouseenter = Swal.stopTimer;
+            //       toast.onmouseleave = Swal.resumeTimer;
+            //     }
+            //   });
+            // Toast.fire({
+            //     icon: "error",
+            //     title: "error occured sorry!!!"
+            //   });
+            // toast({
+            //     title: "❌ Error!",
+            //     description: `error occured sorry!!!`,
+            //   });
             console.error('Error creating project task:', error);
             throw error; // Rethrow the error for further handling if needed
         }
@@ -267,14 +321,22 @@ const AddNodeOnEdgeDrop = ({ id }) => {
                     let item = response.data.items[i]
                     console.log('item:', response.data.items[i]);
                     NewNodes.push({
-                        id: `project-${item.id}`,
+                        id: `${item.id}`,
                         type: 'default',
                         data: { label: item.name },
                         position: { x: 250, y: 5 }
                     })
                 }
                 console.log(NewNodes);
-                setNodes(NewNodes)
+                // setNodes(NewNodes)
+                const opts = { 'elk.direction': "DOWN", ...elkOptions };
+                getLayoutedElements(NewNodes, edges, opts).then(
+                    ({ nodes: layoutedNodes, edges: layoutedEdges }) => {
+                        setNodes(layoutedNodes);
+                        setEdges(layoutedEdges);
+    
+                    },
+                );
             } catch (error) {
                 console.error('Error fetching activities:', error);
             }
@@ -322,16 +384,28 @@ const AddNodeOnEdgeDrop = ({ id }) => {
                     <ContextMenuItem inset
                     onClick={()=>{
                         const newTask = {
-                            Name: "New Task",
-                            Description: "This is a description for the new task.",
+                            Name: "INIT",
+                            Description: "This Is A New Activity.",
                             Project: id, 
-                            TaskStatus: 1,
+                            ActivityResourceType: 2,
+                            ActivityType: 2,
                             BasedOn : []
                           };
                           
                           createProjectTask(newTask)
-                            .then(data => console.log('Created Task:', data))
+                            .then(data => {console.log('Created Task:', data)
+                                const opts = { 'elk.direction': "DOWN", ...elkOptions };
+                                getLayoutedElements(data, edges, opts).then(
+                                    ({ nodes: layoutedNodes, edges: layoutedEdges }) => {
+                                        setNodes(layoutedNodes);
+                                        setEdges(layoutedEdges);
+                    
+                                    },
+                                );
+                            })
                             .catch(err => console.error('Failed to create task:', err));
+                        //   onLayout({ direction: 'DOWN' })
+
                     }}
                     >
                         New Diagram
