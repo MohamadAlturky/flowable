@@ -93,7 +93,7 @@ export default function FullScreenDialog( {isOpen, setIsOpen,children}) {
               
             </IconButton>
             <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-              Project History
+              Project History: Double Click A Node To Get Into A Check Point.
             </Typography>
           </Toolbar>
         </AppBar>

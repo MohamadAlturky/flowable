@@ -1,7 +1,7 @@
 "use client"
 import { useRef, useState, useEffect } from 'react';
 import { FitViewIcon } from "./Icons/FitView";
-
+import { useRouter } from 'next/navigation'
 import {
     ContextMenu,
     ContextMenuCheckboxItem,
@@ -344,8 +344,20 @@ const AddNodeOnEdgeDrop = ({ id }) => {
 
         fetchActivities();
     }, []);
+    const router = useRouter();
 
-
+    const onNodeDoubleClick = (_, node) => {
+        console.log(node.id);
+        // Navigate to the designer page with the node ID
+        let nodess = []
+        nodess.push({
+            id: '2',
+            data: { label: 'Loading .............' },
+            position:{x:0,y:0},
+        })
+        setNodes(nodess)
+        router.push(`/designer/${node.id}`);
+    };
     // 
     return (
         <>
@@ -357,6 +369,7 @@ const AddNodeOnEdgeDrop = ({ id }) => {
                             edges={edges}
                             onNodesChange={onNodesChange}
                             onEdgesChange={onEdgesChange}
+                            onNodeDoubleClick={onNodeDoubleClick}
                             fitViewOptions={{ padding: 2 }}
                             onInit={onInit}
 

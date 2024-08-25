@@ -9,6 +9,9 @@ export const axiosInstance = axios.create({
 export const axiosInstanceAuth = axios.create({
   baseURL: urls.baseUrl
 });
+export const axiosInstanceStorage = axios.create({
+  baseURL: urls.storageUrl
+});
 
 // axiosInstance.interceptors.response.use(
 //   (response) => {

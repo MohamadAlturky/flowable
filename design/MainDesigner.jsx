@@ -96,7 +96,7 @@ const nodeTypes = {
   ManualTask: ManualTask
 };
 import { getAuthTokens } from "../services/auth/AuthServices"
-
+import { axiosInstanceStorage } from '../contexts/api'
 import InterEventBuilder from "../services/DragAndDrop/InterEventBuilder";
 import EndEventBuilder from "../services/DragAndDrop/EndEventBuilder";
 import StartEventBuilder from "../services/DragAndDrop/StartEventBuilder";
@@ -187,6 +187,7 @@ const getLayoutedElements = (nodes, edges, options = {}) => {
 // 
 // 
 // 
+import Swal from "sweetalert2"
 import CustomContextMenu from './CustomContextMenu';
 
 // let id = 0;
@@ -203,7 +204,7 @@ const nodeClassName = (node) => node.type;
 import MainSidebar from "./MainSidebar";
 import apiUrl from "../configurations/apiConfiguration.json";
 
-const MainDesigner = () => {
+const MainDesigner = (params) => {
   const [menu, setMenu] = useState(null);
   const ref = useRef(null);
 
@@ -257,6 +258,77 @@ const MainDesigner = () => {
   const [report, setReport] = useState(null)
   const fileInputRef = useRef(null);
 
+  useEffect(() => {
+
+    async function GET() {
+      console.log("Starting");
+      
+      try {
+        let token = getAuthTokens().accessToken
+        console.log(params.id.params.id);
+        
+        const response = await axiosInstanceStorage.get(`/get/${params.id.params.id}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            }
+          }
+        );
+        Swal.fire({
+          icon: "success",
+          title: "Diagram Loaded Successfully",
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 1500,
+          timerProgressBar: true,
+        });
+
+        console.log('Response:', response.data);
+      } catch (error) {
+        if (error.response && error.response.status != 401) {
+
+          Swal.fire({
+            icon: "error",
+            title: "Failed To Load The Diagram",
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 1500,
+            timerProgressBar: true,
+          })
+        }
+        if (error.response && error.response.status === 401) {
+
+          const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            width: "450px",
+            showConfirmButton: false,
+            timer: 1500,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+              toast.onmouseenter = Swal.stopTimer;
+              toast.onmouseleave = Swal.resumeTimer;
+            },
+          });
+          Toast.fire({
+            icon: "error",
+            title: "session expired please login",
+          });
+          setTimeout(() => {
+            if (typeof window !== 'undefined') {
+              window.location.href = '/auth/login';
+            }
+          }, 1300)
+        }
+
+        console.error('Error creating invitation:', error);
+      }
+    }
+    GET()
+  }, [])
   const onInit = (rfi) => setReactFlowInstance(rfi);
 
   const onConnect = useCallback(
@@ -490,8 +562,8 @@ const MainDesigner = () => {
           }
         })
         console.log(pools);
-        console.log("layoutedNodes",layoutedNodes);
-        
+        console.log("layoutedNodes", layoutedNodes);
+
         let NlayoutedNodes = []
         // pools.forEach((e) => NlayoutedNodes.push(e))
         let layoutedEdges = layouted.edges
@@ -501,8 +573,7 @@ const MainDesigner = () => {
 
           let backgroundC = "#8e00ff"
           if (e.parentId == null) {
-            if(e.type!= "pool")
-            {
+            if (e.type != "pool") {
               NlayoutedNodes.push(
                 {
                   id: e.id,
@@ -511,18 +582,18 @@ const MainDesigner = () => {
                   data: {
                     label: e.data.label,
                   },
-                  type:e.type,
+                  type: e.type,
                   // parentId:e.parentId,
                   // style: { ...e.style},
                   // targetPosition: e.targetPosition,
                   // sourcePosition: e.sourcePosition,
                 }
-              ) 
+              )
             }
           }
           else {
             console.log(e);
-            
+
             console.log(newNodes.filter(f => f.id == e.parentId)[0]);
             NlayoutedNodes.push(
               {
@@ -532,13 +603,13 @@ const MainDesigner = () => {
                 data: {
                   label: e.data.label + ", the actor is " + newNodes.filter(f => f.id == e.parentId)[0].name,
                 },
-                type:e.type,
+                type: e.type,
                 // parentId:e.parentId,
                 // style: { ...e.style},
                 // targetPosition: e.targetPosition,
                 // sourcePosition: e.sourcePosition,
               }
-            ) 
+            )
           }
         })
         console.log("layouted");
@@ -571,7 +642,7 @@ const MainDesigner = () => {
   // 
   const rephrase = () => {
     console.log(nodes);
-    
+
     if (process == "") {
       toast({
         title: "❌ Error!",
