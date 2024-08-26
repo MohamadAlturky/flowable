@@ -751,6 +751,10 @@ const MainDesigner = (params) => {
   }
 
 
+  const onEdgeDoubleClick = useCallback((event, edge) => {
+    event.stopPropagation();
+    setEdges((eds) => eds.filter((e) => e.id !== edge.id));
+  }, [setEdges]);
   // 
   // 
   // 
@@ -898,6 +902,7 @@ const MainDesigner = (params) => {
                       <ReactFlow
                         nodes={nodes}
                         edges={edges}
+                        onEdgeDoubleClick={onEdgeDoubleClick}
                         onNodesChange={(e) => {
                           onNodesChange(e);
                           // console.log(e);
