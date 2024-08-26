@@ -27,8 +27,9 @@ import {
 } from "@/components/ui/carousel"
 
 
-export default function GatewaysReportModal({ isOpen, setIsOpen, title, supTitle, report }) {
+export default function GatewaysReportModal({ isOpen, setIsOpen, title, supTitle }) {
   const { toast } = useToast()
+  let report = [{"name":"Drag and Drop","type":"you can use the side bar to D&D the items in the flow","inputs":[{"description":"you have to drop the activities in a pool","name":"Be Careful 😱"}],"outputs":[]}]
   console.log(report);
 
   return (
@@ -69,15 +70,17 @@ export default function GatewaysReportModal({ isOpen, setIsOpen, title, supTitle
                                         <CarouselItem>
                                           <Card className="mt-4 rounded-none">
                                             <CardHeader>
-                                              <CardTitle>Task : {f.name} &ensp;
+                                              <CardTitle>
+                                                {/* Task : {f.name} &ensp; */}
                                               <span style={{
                                                 color:"green"
                                               }}>
-                                                (input task)
+                                                {/* (input task) */}
+                                                {f.name}
                                               </span>
                                               </CardTitle>
                                               <CardDescription>
-                                                type : input for the gateway {e.name}
+                                                {/* type : input for the gateway {e.name} */}
                                               </CardDescription>
                                               <CardDescription>
                                                 {f.description}
