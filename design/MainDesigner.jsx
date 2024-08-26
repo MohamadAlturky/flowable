@@ -6,6 +6,9 @@ import "./contextMenu.css"
 import CustomViewer from "../components/pdfViewer"
 import downloadFile from "../services/download/main"
 import Button from '../components/ui/button'
+import { ToastAction } from "@/components/ui/toast"
+
+
 import {
   ContextMenu,
   ContextMenuCheckboxItem,
@@ -109,7 +112,7 @@ const onDragOver = (event) => {
   event.preventDefault();
   event.dataTransfer.dropEffect = "move";
 };
-
+import {axiosInstance} from "../contexts/api"
 
 // 
 // 
@@ -190,6 +193,9 @@ const getLayoutedElements = (nodes, edges, options = {}) => {
 import Swal from "sweetalert2"
 import CustomContextMenu from './CustomContextMenu';
 
+
+
+
 // let id = 0;
 import { Guid } from 'js-guid';
 
@@ -234,9 +240,6 @@ const MainDesigner = (params) => {
   const onPaneClick = useCallback(() => setMenu(null), [setMenu]);
   const [editNameModalOpen, setEditNameModalOpen] = React.useState(false);
   const [editId, setEditId] = React.useState("");
-
-
-  // 
   const { toast } = useToast();
   const [process, setProcess] = useState("");
   const [newProcess, setNewProcess] = useState("");
@@ -244,6 +247,7 @@ const MainDesigner = (params) => {
   const [discussion, setDiscussion] = useState([]);
   const [discussionOpen, setDiscussionOpen] = useState(false);
   const [reportModalOpen, setReportModalOpen] = useState(false);
+  const [commitStart, setCommitStart] = useState(false);
   const [changeProcess, setChangeProcess] = useState(false);
   const [gatewaysReportModalOpen, setGatewaysReportModalOpen] = useState(false);
   const [poolsReportModalOpen, setPoolsReportModalOpen] = useState(false);
@@ -253,21 +257,165 @@ const MainDesigner = (params) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [eventModalOpen, setEventModalOpen] = useState(false);
   const [reactFlowInstance, setReactFlowInstance] = useState();
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [report, setReport] = useState(null)
   const fileInputRef = useRef(null);
+  const [data, setData] = useState(null)
+
+  useEffect(()=>{
+    if(data != null)
+    {
+      setProcess(data.process_description)
+      setNodes(data.nodes)
+      setEdges(data.edges)
+    }
+  },[data])
+
+  // 
+  // 
+  // 
+  // 
+  // 
+  // 
+  // 
+  // 
+  // 
+  // 
+  // 
+  // 
+  // 
+  // 
+  // 
+  // 
+
+  const createProjectTask = async (taskData) => {
+    try {
+      let token = getAuthTokens().accessToken
+
+
+      const response = await axiosInstance.post('/api/activities', taskData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log('Task created successfully:', response.data);
+      // let NewNodes = nodes.concat({
+      //     id: `${response.data.id}`,
+      //     type: 'default',
+      //     data: { label: taskData.Name },
+      //     position: { x: 250, y: 5 }
+      // })
+      // setNodes(NewNodes)
+      let savedStuff = {
+        "activityId": response.data.id,
+        "process_description":process,
+        "nodes":nodes,
+        "edges":edges
+      }
+      const response2 = await axiosInstanceStorage.post('/set', savedStuff, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        width: "450px",
+        className: "z-50",
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.onmouseenter = Swal.stopTimer;
+          toast.onmouseleave = Swal.resumeTimer;
+        }
+      });
+      Toast.fire({
+        icon: "success",
+        title: "the edit checkpoint is saved successfully."
+      });
+      setTimeout(()=>{
+
+        window.location.href = `/designer/${projectId}-${response.data.id}`
+      },1500)
+
+      return []; // Return the created task data
+    } catch (error) {
+      const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        width: "450px",
+        className: "z-50",
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.onmouseenter = Swal.stopTimer;
+          toast.onmouseleave = Swal.resumeTimer;
+        }
+      });
+      Toast.fire({
+        icon: "error",
+        title: "error occured sorry!!!"
+      });
+      console.error('Error creating project task:', error);
+      throw error; // Rethrow the error for further handling if needed
+    }
+  };
+
+  // 
+  // 
+  // 
+  // 
+  // 
+  // 
+  // 
+  // 
+  // 
+  // 
+  // 
+  // 
+  // 
+  // 
+  // 
+  // 
+  // 
+  // 
+  // 
+  // 
+  // 
+  // 
+  // 
+  // 
+  // 
+
+
+
+  const [activityId, setActivityId] = useState(null);
+  const [projectId, setProjectId] = useState(null);
 
   useEffect(() => {
 
     async function GET() {
       console.log("Starting");
-      
+
       try {
         let token = getAuthTokens().accessToken
         console.log(params.id.params.id);
-        
-        const response = await axiosInstanceStorage.get(`/get/${params.id.params.id}`,
+        let str = params.id.params.id
+        const numbers = str.split('-');
+
+        // Extract the two numbers
+        const project = numbers[0];
+        const activity = numbers[1];
+        setProjectId(project)
+        setActivityId(activity)
+        const response = await axiosInstanceStorage.get(`/get/${activity}`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -286,18 +434,31 @@ const MainDesigner = (params) => {
         });
 
         console.log('Response:', response.data);
+        setData(response.data)
       } catch (error) {
         if (error.response && error.response.status != 401) {
-
-          Swal.fire({
-            icon: "error",
-            title: "Failed To Load The Diagram",
-            toast: true,
-            position: "top-end",
-            showConfirmButton: false,
-            timer: 1500,
-            timerProgressBar: true,
-          })
+          if (error.response && error.response.status == 404) {
+            Swal.fire({
+              icon: "info",
+              title: "No Diagram Until Now",
+              toast: true,
+              position: "top-end",
+              showConfirmButton: false,
+              timer: 1500,
+              timerProgressBar: true,
+            })
+          }
+          else {
+            Swal.fire({
+              icon: "error",
+              title: "Failed To Load The Diagram",
+              toast: true,
+              position: "top-end",
+              showConfirmButton: false,
+              timer: 1500,
+              timerProgressBar: true,
+            })
+          }
         }
         if (error.response && error.response.status === 401) {
 
@@ -660,6 +821,7 @@ const MainDesigner = (params) => {
 
     const data = {
       "process_description": process,
+
     }
     axiosInstance.post(apiUrl.aiUrl + "/rephrasing/generate", data,
       {
@@ -1040,7 +1202,14 @@ const MainDesigner = (params) => {
                                 Download
                                 <ContextMenuShortcut>⌘</ContextMenuShortcut>
                               </ContextMenuItem>
-
+                              <ContextMenuItem inset
+                                onClick={() => {
+                                  setCommitStart(true)
+                                }}
+                              >
+                                Save A Check Point
+                                <ContextMenuShortcut>⌘</ContextMenuShortcut>
+                              </ContextMenuItem>
                             </>}
                             <ContextMenuItem
                               inset
@@ -1051,11 +1220,33 @@ const MainDesigner = (params) => {
 
                               <ContextMenuShortcut>⌘</ContextMenuShortcut>
                             </ContextMenuItem>
+                            <ContextMenuSeparator />
                             <ContextMenuItem
                               inset
-                              onClick={()=>{setGatewaysReportModalOpen(true)}}
+                              onClick={() => { setGatewaysReportModalOpen(true) }}
                             >
                               User Guide
+                              <ContextMenuShortcut>⌘</ContextMenuShortcut>
+                            </ContextMenuItem>
+                            <ContextMenuItem
+                              inset
+                              onClick={() => {   
+                                
+                                toast({
+                                  title: "Show History 🧐?",
+                                  description: "This Work Will Be Lost If You Don't Save It First",
+                                  action: (
+                                    <ToastAction altText="Goto HIstory"
+                                    onClick={()=>{
+                                        window.location.href = `/project/${projectId}`
+                                    }}>Show</ToastAction>
+                                  ),
+                                })
+                                
+                                
+                            }}
+                            >
+                              Show History
                               <ContextMenuShortcut>⌘</ContextMenuShortcut>
                             </ContextMenuItem>
                           </ContextMenuSub>
@@ -1161,6 +1352,53 @@ const MainDesigner = (params) => {
                       }
                     }}
                   />)}
+
+{/* //// */}
+{/* //// */}
+{/* //// */}
+{/* //// */}
+{/* //// */}
+{/* //// */}
+{/* //// */}
+{/* //// */}
+{/* //// */}
+
+                    <InsertValueModal
+                      placeholder={"write here.."}
+                      isOpen={commitStart}
+                      setIsOpen={setCommitStart}
+                      label={"Message"}
+                      supTitle={"write the checkpoint name."}
+                      title={"Commit"}
+                      setValueName={async (v) => {
+                        const newTask ={
+                          "name": v,
+                          "description": "This Is AN Edited Activity.",
+                          "project": projectId,
+                          "activityType": 2,
+                          "activityResourceType": 2,
+                          "baseOn": [
+                            parseInt(activityId)
+                          ]
+                        }
+                 
+                        console.log(newTask);
+                        
+                        
+                        createProjectTask(newTask)
+                      }}
+                    />
+{/* //// */}
+{/* //// */}
+{/* //// */}
+{/* //// */}
+{/* //// */}
+{/* //// */}
+{/* //// */}
+{/* //// */}
+{/* //// */}
+
+
                   <GatewaysReportModal isOpen={gatewaysReportModalOpen} setIsOpen={setGatewaysReportModalOpen} title={"Notes"} supTitle={"How To Use Our Designer 😊?"} />
                   {report && (
                     <>

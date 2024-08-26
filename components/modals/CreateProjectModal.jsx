@@ -28,7 +28,7 @@ import { axiosInstance } from "../../contexts/api"
 export default function CreateProjectModal({ isOpen, setIsOpen }) {
   const [name, setName] = React.useState("");
   const [description, setDescription] = React.useState("");
-  const [projectType, setProjectType] = React.useState("1");
+  const [projectType, setProjectType] = React.useState("2");
 
   const inputRef = React.useRef(null);
 
@@ -195,13 +195,13 @@ export default function CreateProjectModal({ isOpen, setIsOpen }) {
                   />
 
                   <Label className="flex justify-start mb-2">Type</Label>
-                  <Select value={projectType} onValueChange={(e) => setProjectType(e)} defaultValue="1">
+                  <Select value={projectType} onValueChange={(e) => setProjectType(e)} defaultValue="2">
                     <SelectTrigger>
                       <SelectValue placeholder="Select the type of the project." />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem disabled  value="1">Public Comming Soon</SelectItem>
                       <SelectItem selected value="2">Private</SelectItem>
+                      <SelectItem disabled  value="1">Public Comming Soon</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

@@ -214,8 +214,8 @@ const AddNodeOnEdgeDrop = ({ id }) => {
     const createProjectTask = async (taskData) => {
         try {
             let token = getAuthTokens().accessToken
-         
-              
+
+
             const response = await axiosInstance.post('/api/activities', taskData, {
                 headers: {
                     "Content-Type": "application/json",
@@ -317,6 +317,7 @@ const AddNodeOnEdgeDrop = ({ id }) => {
                 );
                 console.log('Response:', response.data);
                 let NewNodes = []
+                let NewEdges = []
                 for (let i = 0; i < response.data.items.length; i++) {
                     let item = response.data.items[i]
                     console.log('item:', response.data.items[i]);
@@ -326,15 +327,30 @@ const AddNodeOnEdgeDrop = ({ id }) => {
                         data: { label: item.name },
                         position: { x: 250, y: 5 }
                     })
+                    for (let j = 0; j < item.activityPrecedentPrecedentNavigations.length; j++) {
+                        NewEdges.push({
+                            id: item.activityPrecedentPrecedentNavigations[j].id.toString(),
+                            source: item.activityPrecedentPrecedentNavigations[j].precedent.toString(),
+                            target: item.activityPrecedentPrecedentNavigations[j].activity.toString(),
+                            type: 'smoothstep', markerEnd: {
+                                type: MarkerType.ArrowClosed,
+                                width: 20,
+                                height: 20,
+                                color: '#1976d2',
+                            }
+                        })
+                    }
                 }
+
                 console.log(NewNodes);
+                console.log(NewEdges);
                 // setNodes(NewNodes)
                 const opts = { 'elk.direction': "DOWN", ...elkOptions };
-                getLayoutedElements(NewNodes, edges, opts).then(
+                getLayoutedElements(NewNodes, NewEdges, opts).then(
                     ({ nodes: layoutedNodes, edges: layoutedEdges }) => {
                         setNodes(layoutedNodes);
                         setEdges(layoutedEdges);
-    
+
                     },
                 );
             } catch (error) {
@@ -353,10 +369,11 @@ const AddNodeOnEdgeDrop = ({ id }) => {
         nodess.push({
             id: '2',
             data: { label: 'Loading .............' },
-            position:{x:0,y:0},
+            position: { x: 0, y: 0 },
         })
         setNodes(nodess)
-        router.push(`/designer/${node.id}`);
+        window.location.href = `/designer/${id}-${node.id}`
+        // router.push(`/designer/${id}-${node.id}`);
     };
     // 
     return (
@@ -395,31 +412,32 @@ const AddNodeOnEdgeDrop = ({ id }) => {
                 </ContextMenuTrigger>
                 <ContextMenuContent className="z-10000 w-64">
                     <ContextMenuItem inset
-                    onClick={()=>{
-                        const newTask = {
-                            Name: "INIT",
-                            Description: "This Is A New Activity.",
-                            Project: id, 
-                            ActivityResourceType: 2,
-                            ActivityType: 2,
-                            BasedOn : []
-                          };
-                          
-                          createProjectTask(newTask)
-                            .then(data => {console.log('Created Task:', data)
-                                const opts = { 'elk.direction': "DOWN", ...elkOptions };
-                                getLayoutedElements(data, edges, opts).then(
-                                    ({ nodes: layoutedNodes, edges: layoutedEdges }) => {
-                                        setNodes(layoutedNodes);
-                                        setEdges(layoutedEdges);
-                    
-                                    },
-                                );
-                            })
-                            .catch(err => console.error('Failed to create task:', err));
-                        //   onLayout({ direction: 'DOWN' })
+                        onClick={() => {
+                            const newTask = {
+                                Name: "INIT",
+                                Description: "This Is A New Activity.",
+                                Project: id,
+                                ActivityResourceType: 2,
+                                ActivityType: 2,
+                                BasedOn: []
+                            };
 
-                    }}
+                            createProjectTask(newTask)
+                                .then(data => {
+                                    console.log('Created Task:', data)
+                                    const opts = { 'elk.direction': "DOWN", ...elkOptions };
+                                    getLayoutedElements(data, edges, opts).then(
+                                        ({ nodes: layoutedNodes, edges: layoutedEdges }) => {
+                                            setNodes(layoutedNodes);
+                                            setEdges(layoutedEdges);
+
+                                        },
+                                    );
+                                })
+                                .catch(err => console.error('Failed to create task:', err));
+                            //   onLayout({ direction: 'DOWN' })
+
+                        }}
                     >
                         New Diagram
                         <ContextMenuShortcut>⌘</ContextMenuShortcut>

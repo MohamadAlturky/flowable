@@ -39,19 +39,19 @@ export default function Home() {
                     </CardContent>
                 </Card>
 
-                <Card x-chunk="dashboard-05-chunk-1" className="p-1">
+                {/* <Card x-chunk="dashboard-05-chunk-1" className="p-1">
                     <CardHeader>
-                        <CardTitle>Contibutions</CardTitle>
+                        <CardTitle>Welcome To Donut</CardTitle>
                         <CardDescription>
                             You can use our system to generate bpmn digrams with the power of <b>AI</b>.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
-
-                        <ContributionHeatmap />
+                        Create A New Project And Start Your The Process Management Journey.
                     </CardContent>
 
-                </Card>
+                </Card> */}
+                        {/* <ContributionHeatmap /> */}
                 <CreateProjectModal
                     isOpen={createProject}
                     setIsOpen={setCreateProject}
