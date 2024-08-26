@@ -204,6 +204,7 @@ import MainSidebar from "./MainSidebar";
 import apiUrl from "../configurations/apiConfiguration.json";
 
 const MainDesigner = () => {
+  let InputId = getId()
   const [menu, setMenu] = useState(null);
   const ref = useRef(null);
 
@@ -599,7 +600,7 @@ const MainDesigner = () => {
   };
 
   const triggerFileInput = () => {
-    document.getElementById('hiddenFileInput').click();
+    document.getElementById(InputId).click();
   };
   /////
   const onNodeDoubleClick = async (_, node) => {
@@ -832,7 +833,7 @@ const MainDesigner = () => {
       </>}
       <input
         type="file"
-        id="hiddenFileInput"
+        id={InputId}
         style={{ display: 'none' }}
         onChange={handleFileChange}
         accept=".donut"
