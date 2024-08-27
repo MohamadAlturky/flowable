@@ -3,6 +3,7 @@
 import { NextResponse } from 'next/server';
 
 export function middleware(request) {
+  
   // // Access cookies from the request
   const cookies = request.cookies;
   console.log(cookies);
@@ -36,7 +37,7 @@ export const config = {
     Exclude paths like '/auth/login' and '/auth/register'
     by including all paths except these specific ones.
     */
-    '/((?!auth/login|auth/register|.next/static|favicon.ico|icon.png).*)',
+    '/((?!auth/login|auth/register|.next|.next/static|favicon.ico|icon.png).*)',
   ],
 };
 

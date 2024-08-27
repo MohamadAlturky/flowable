@@ -2,6 +2,8 @@
 import { useRef, useState, useEffect } from 'react';
 import { FitViewIcon } from "./Icons/FitView";
 import { useRouter } from 'next/navigation'
+// import { useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast"
 import {
     ContextMenu,
     ContextMenuCheckboxItem,
@@ -31,10 +33,12 @@ import {
     Background,
     MarkerType,
     useReactFlow,
+    useOnSelectionChange 
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
 import './index.css';
+import { Toaster } from "@/components/ui/toaster"
 
 const position = { x: 0, y: 0 };
 
@@ -162,6 +166,7 @@ const getLayoutedElements = (nodes, edges, options = {}) => {
         .catch(console.error);
 };
 import Swal from 'sweetalert2'
+import zIndex from '@mui/material/styles/zIndex';
 
 const AddNodeOnEdgeDrop = ({ id }) => {
     const { toast } = useToast();
@@ -375,7 +380,18 @@ const AddNodeOnEdgeDrop = ({ id }) => {
         window.location.href = `/designer/${id}-${node.id}`
         // router.push(`/designer/${id}-${node.id}`);
     };
-    // 
+    //
+    
+    const [selectedNodes, setSelectedNodes] = useState([]);
+    const [selectedEdges, setSelectedEdges] = useState([]); 
+    const onChange = useCallback(({ nodes, edges }) => {
+        setSelectedNodes(nodes.map((node) => node.id));
+        setSelectedEdges(edges.map((edge) => edge.id));
+      }, []);
+     
+      useOnSelectionChange({
+        onChange,
+      });
     return (
         <>
             <ContextMenu>
@@ -450,11 +466,30 @@ const AddNodeOnEdgeDrop = ({ id }) => {
 
                     <ContextMenuItem inset onClick={() => onLayout({ direction: 'RIGHT' })}>
                         Horizontal layout
-
+                        <ContextMenuShortcut>⌘</ContextMenuShortcut>
+                    </ContextMenuItem>
+                    <ContextMenuItem inset onClick={
+                       ()=>{
+                        toast({
+                            title: "Sure You Want To Merge 🧐?",
+                            description: `Tou Will Merge ${selectedNodes.length} Check Points`,
+                            action: (
+                              <ToastAction altText="Merge"
+                              onClick={()=>{
+                                //   window.location.href = `/project/${projectId}`
+                              }}>Show</ToastAction>
+                            ),
+                          })
+                       }
+                        // () => onLayout({ direction: 'DOWN' })
+                        }>
+                        Merge
                         <ContextMenuShortcut>⌘</ContextMenuShortcut>
                     </ContextMenuItem>
                 </ContextMenuContent>
             </ContextMenu>
+            <Toaster /> 
+
         </>
     );
 };
