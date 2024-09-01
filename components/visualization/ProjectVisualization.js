@@ -468,7 +468,7 @@ const AddNodeOnEdgeDrop = ({ id }) => {
                         Horizontal layout
                         <ContextMenuShortcut>⌘</ContextMenuShortcut>
                     </ContextMenuItem>
-                    <ContextMenuItem inset onClick={
+                    {/* <ContextMenuItem inset onClick={
                        ()=>{
                         toast({
                             title: "Sure You Want To Merge 🧐?",
@@ -485,7 +485,7 @@ const AddNodeOnEdgeDrop = ({ id }) => {
                         }>
                         Merge
                         <ContextMenuShortcut>⌘</ContextMenuShortcut>
-                    </ContextMenuItem>
+                    </ContextMenuItem> */}
                 </ContextMenuContent>
             </ContextMenu>
             <Toaster /> 

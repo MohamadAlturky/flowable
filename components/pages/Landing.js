@@ -143,22 +143,22 @@ export default function Landing({children}) {
             className="grid gap-4 text-sm text-muted-foreground" x-chunk="dashboard-04-chunk-0"
           >
             <Link href="/" 
-            className="font-bold text-primary"
+            className="text-primary"
             >
               Dashboard
             </Link>
             <Link 
-            className="font-bold text-primary "
+            className="text-primary "
             
             href="/projects">Projects</Link>
-            <Link
+            {/* <Link
             className="font-bold text-primary "
             
             href="/invitations">Invitations</Link>
             <Link
             className="font-bold text-primary "
             
-            href="#">Notifications</Link>
+            href="#">Notifications</Link> */}
             {/* <Link href="#">Learn BPMN</Link> */}
             {/* <Link href="#">Advanced</Link> */}
           </nav>
